@@ -41,7 +41,7 @@ def AnCai(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = makeStringList(v_list,r_list,a_list,rc0)
+	string_list = MakeStringList(v_list,r_list,a_list,rc0)
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "An and Cai deuteron")
@@ -83,7 +83,7 @@ def PereyPerey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = makeStringList(v_list,r_list,a_list,rc0)
+	string_list = MakeStringList(v_list,r_list,a_list,rc0)
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Perey and Perey deuteron")
