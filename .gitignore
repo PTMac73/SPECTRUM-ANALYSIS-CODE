@@ -1,0 +1,26 @@
+# Directories
+4HistROOT/
+ENSDFCode/
+MunichSortCode/
+SPC-Help.sh
+XMGraceBatch/
+XMGraceMg/
+XMGraceOpticalModelChecker/
+XMGraceSharp/
+energyUncertainty/
+extractTimeOfRuns/
+gf3_2_SpreadsheetCode/
+gf3_ps_2_pdf/
+histogramCounter/
+latexRender/
+makeIsotopeFolder/
+nameFigure/
+opticalModelChecker/
+renameROOTfile/
+rootMacros/
+PtolemyCode/*/
+# File types
+*.pyc
+.xlsx
+.ods
+*.15
