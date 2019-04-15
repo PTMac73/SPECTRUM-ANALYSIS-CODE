@@ -9,6 +9,7 @@
 from opticalmodel_globals import *
 import numpy as np
 
+# =============================================================================================== #
 # Koning-Delaroche set
 def KoningDelaroche(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	# CHECK VALUE OF H
@@ -96,8 +97,7 @@ def KoningDelaroche(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Produ
 
 	return string_list
 
-
-
+# =============================================================================================== #
 # Perey (protons)
 def Perey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	# CHECK VALUE OF H
@@ -138,4 +138,138 @@ def Perey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 		PrintCalculatedQuantities(A,Z,E,Q)
 	return string_list
 
+# =============================================================================================== #
+# Menet (protons)
+def Menet(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+	# CHECK VALUE OF H
+	CheckP(H)
+
+	# CALCULATE TRIVIAL PARAMETERS
+	[N, Q, E] = CalcTrivials(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H)
+	
+	# Calculate final parameters
+	v = 49.9 - 0.22*E + 26.4*( N - Z )/A + 0.4*Z*( A**(-1.0/3.0) )
+	vi = 1.2 + 0.09*E
+	vsi = 4.2 - 0.05*E + 15.5*( N - Z )/A
+	vso = 6.04
+	vsoi = 0.0
+	
+	r0 = 1.16
+	ri0 = 1.37
+	rsi0 = 1.37
+	rso0 = 1.064
+	rsoi0 = 0.0
+	
+	a = 0.75
+	ai = 0.74 - 0.008*E + float( N - Z )/float(A)
+	asi = 0.74 - 0.008*E + float( N - Z )/float(A)
+	aso = 0.78
+	asoi = 00
+	
+	rc0 = 1.25
+	
+	# Format final paramaters into a list of strings
+	v_list = [v, vi, vsi, vso, vsoi]
+	r_list = [r0, ri0, rsi0, rso0, rsoi0]
+	a_list = [a, ai, asi, aso, asoi]
+	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	
+	if PRINT == 1:
+		PrintOpticalModel(string_list, "Menet proton")
+		PrintCalculatedQuantities(A,Z,E,Q)
+	return string_list
+
+ # =============================================================================================== #
+# Varner (protons)
+def Varner(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+	# CHECK VALUE OF H
+	CheckP(H)
+
+	# CALCULATE TRIVIAL PARAMETERS
+	[N, Q, E] = CalcTrivials(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H)
+	
+	# Calculate final parameters
+	rc1 = 1.24*(A**(1.0/3.0) ) + 0.12
+	ec = 1.73*Z/rc1
+	eta =  float(N - Z)/float(A) 
+
+	v = 52.9 + (13.1*(N - Z)/A ) + ( -0.299*( E - ec) )
+	vi = 7.8/( 1 + np.exp( ( 35 - ( E - ec ) )/16.0 ) )
+	vsi = ( 10 + ( 18.0*(N - Z)/A ) )/( 1 + np.exp( ( E - ec - 36.0 )/37.0 ) )
+	vso = 5.9
+	vsoi = 0.0
+	
+	r0 = ( ( 1.25*( A**(1.0/3.0) ) ) - 0.225 )*( A**(-1.0/3.0) )
+	ri0 = ( ( 1.33*( A**(1.0/3.0) ) ) - 0.42 )*( A**(-1.0/3.0) )
+	rsi0 = ( ( 1.33*( A**(1.0/3.0) ) ) - 0.42 )*( A**(-1.0/3.0) )
+	rso0 = ( ( 1.34*( A**(1.0/3.0) ) ) - 1.2 )*( A**(-1.0/3.0) )
+	rsoi0 = 0.0
+	
+	a = 0.69
+	ai = 0.69
+	asi = 0.69
+	aso = 0.63
+	asoi = 0.0
+
+	rc0 = rc1*( A**(-1.0/3.0) )
+	
+	
+	
+	# Format final paramaters into a list of strings
+	v_list = [v, vi, vsi, vso, vsoi]
+	r_list = [r0, ri0, rsi0, rso0, rsoi0]
+	a_list = [a, ai, asi, aso, asoi]
+	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	
+	if PRINT == 1:
+		PrintOpticalModel(string_list, "Varner proton")
+		PrintCalculatedQuantities(A,Z,E,Q)
+		print( "ec\t" + str(ec) )
+		print( "eta\t" + str(eta) )
+	return string_list
+
+# =============================================================================================== #
+# Becchetti and Greenlees (protons)
+def BecchettiGreenlees(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+	# CHECK VALUE OF H
+	CheckP(H)
+
+	# CALCULATE TRIVIAL PARAMETERS
+	[N, Q, E] = CalcTrivials(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H)
+	
+	# Calculate final parameters
+	v = 54.0 - 0.32*E + 0.4*Z*( A**(-1.0/3.0) ) + 24.0*( N - Z )/A
+	vi = 0.22*E - 2.7 if 0.22*E - 2.7 > 0.0 else 0.0
+	vsi = 11.8 - 0.25*E + 12.0*( N - Z )/A if 11.8 - 0.25*E + 12.0*( N - Z )/A > 0.0 else 0.0
+	vso = 6.2
+	vsoi = 0.0
+	
+	r0 = 1.17
+	ri0 = 1.32
+	rsi0 = 1.32
+	rso0 = 1.01
+	rsoi0 = 0.0
+	
+	a = 0.75
+	ai = 0.51 + 0.7*( N - Z )/A
+	asi = 0.51 + 0.7*( N - Z )/A
+	aso = 0.75
+	asoi = 0.0
+	
+	rc0 = 1.3
+	
+	# Format final paramaters into a list of strings
+	v_list = [v, vi, vsi, vso, vsoi]
+	r_list = [r0, ri0, rsi0, rso0, rsoi0]
+	a_list = [a, ai, asi, aso, asoi]
+	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	
+	if PRINT == 1:
+		PrintOpticalModel(string_list, "Becchetti and Greenlees proton")
+		PrintCalculatedQuantities(A,Z,E,Q)
+	return string_list
+
+# 124Te(p,d), Ebeam=15MeV, Ex=0MeV
+#PRINT = 1
+#BecchettiGreenlees(124, 52, 15, 0, 123.9028179, 1.00782503224, 2.01410177811, 122.9042698, 0)
 
