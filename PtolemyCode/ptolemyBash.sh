@@ -25,19 +25,53 @@ PTOLEMY_DIR=~/Software/Ptolemy/
 PTOLEMY_ANALYSIS_DIR="/home/ptmac/Documents/SPECTRUM_ANALYSIS_CODE/PtolemyCode/"
 
 # Check for help option
+usage() {
+	echo "Usage: "
+	echo "  ptolemyBash.sh -h | --help"
+	echo "  ptolemyBash.sh <input_shell.sh>"
+	echo ""
+}
+
 for i in $@
 do
 	if [[ "$i" == "-h" ]] || [[ "$i" == "--help" ]]
 	then
+		usage
 		cat << EOH
-Bananas
+Options:
+  h | --help                 Opens the help dialogue
+  <input_shell.sh>           Runs the ptolemyBash script with the given input 
+                               parameters (defined later).
+
+ptolemyBash controls the creation of Ptolemy input and output files. This is
+done through the <input_shell.sh> script, and some other pre-defined scripts.
+The stages of the script can be controlled with switches at the top, and are
+detailed below:
+  (1) DELETE all previous input and ouput files.
+  (2) WRITE new input files for the given input.
+  (3) RUN Ptolemy on all of the input files, generating output files.
+  (4) CLEAN all the new ouput files so that all of the desired numbers are
+      extracted.
+  (5) COMBINE all of the output files into a .csv file to be pasted into a 
+      spreadsheet.
+
+The <input_shell.sh> defines a number of global variables, which are then used
+in the main script. It also defines the location of a list of excitation 
+energies, as well as directories and the reaction parameters used in Python.
+
 EOH
 		exit 0
 	fi
 done
 
 # LOAD VARIABLE DIRECTORIES
-. "${1}"
+if [ -e "${1}" ]
+then
+	. "${1}"
+else
+	usage
+	exit 1
+fi
 
 FOLDER_LENGTH="${#INPUT_FILE_DIR}"
 clear
