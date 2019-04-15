@@ -8,7 +8,6 @@
 # Nuclear Physics Research Group
 # School of Physics and Astronomy
 # The University of Manchester
-# LAST EDITED: 14/08/18
 # =============================================================================================== #
 # FORMAT
 # To execute the script, you must include the global variables file
@@ -42,7 +41,7 @@ done
 
 FOLDER_LENGTH="${#INPUT_FILE_DIR}"
 clear
-############################# FUNCTIONS ###############################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Deletes all the files in a given folder (if they exist) and outputs a
 # message to the console
 delete_file_type(){
@@ -70,31 +69,30 @@ delete_file_type(){
 # Check if a folder exists, and make it if it doesn't
 check_folder_exists(){
 	if [ ! -d ${1} ]
-then
-	echo -e "${1##*Data/} does not exist. Making directory."
-	mkdir ${1}
-fi
- 
+	then
+		echo -e "${1##*Data/} does not exist. Making directory."
+		mkdir ${1}
+	fi
 }
 
-########################### CHECK DIRECTORIES ############################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CHECK DIRECTORIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 check_folder_exists ${INPUT_FILE_DIR}
 check_folder_exists ${OUTPUT_FILE_DIR}
 
-############################# DELETE FILES ###############################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE FILES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 if [ $SWITCH_DELETE_FILE == 1 ]
 then
 	delete_file_type .in "${INPUT_FILE_DIR}"
 	delete_file_type .out "${OUTPUT_FILE_DIR}"
 	delete_file_type .out-clean "${OUTPUT_FILE_DIR}"
 fi
-############################## CREATE FILES ##############################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE FILES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Run ptolemyMaster.py -> writes input file
 if [ $SWITCH_WRITE_INPUT == 1 ]
 then
-	python "${PTOLEMY_ANALYSIS_DIR}ptolemyMaster.py" "${PTOLEMY_OPTION_FILE}"
+	python "${PTOLEMY_ANALYSIS_DIR}WritePtolemyInputFile.py" "${PTOLEMY_OPTION_FILE}"
 fi
-############################## RUN PTOLEMY ###############################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ RUN PTOLEMY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Run ptolemy for each of the input files and store in the right folder
 if [ $SWITCH_RUN_PTOLEMY == 1 ]
 then
@@ -117,7 +115,7 @@ then
 	done
 fi
 
-############################## RUN PTCLEAN ###############################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ RUN PTCLEAN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 if [ $SWITCH_CLEAN == 1 ]
 then
 	for OUTFILE in "${OUTPUT_FILE_DIR}"*.out; do
@@ -127,7 +125,7 @@ then
 	done
 fi
 
-############################ CREATE CSV ARRAY ############################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE CSV ARRAY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # First write a file list for python to read
 CLEAN_NAME="cleanFileList.txt"
 if [ $SWITCH_CSV_ARRAY == 1 ]

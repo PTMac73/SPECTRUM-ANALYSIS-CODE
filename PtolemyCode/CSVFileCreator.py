@@ -9,7 +9,6 @@
 # Nuclear Physics Research Group
 # School of Physics and Astronomy
 # The University of Manchester
-# LAST EDITED: 09/02/18
 # ########################################################################
 import sys
 

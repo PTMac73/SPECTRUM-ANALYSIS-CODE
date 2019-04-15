@@ -17,7 +17,6 @@
 # Nuclear Physics Research Group
 # School of Physics and Astronomy
 # The University of Manchester
-# LAST EDITED: 08/10/18
 # =============================================================================================== #
 # N -> the neutron number/proton number of the target for calculating 
 # 	   occupancies
@@ -291,7 +290,7 @@ def getSpecificStates(N,d):
 	JP_final = JLToJP(J_final,L_final)
 	
 	# Print levels
-	#printStates(J_final,L_final,node_final)
+	printStates(J_final,L_final,node_final)
 	
 	# Return the final quantities
 	return L_final, J_final, JP_final, node_final
