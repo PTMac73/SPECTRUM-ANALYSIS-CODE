@@ -14,13 +14,12 @@ gf3_ps_2_pdf/
 histogramCounter/
 latexRender/
 makeIsotopeFolder/
-nameFigure/
 opticalModelChecker/
 renameROOTfile/
 rootMacros/
 PtolemyCode/*/
 # File types
 *.pyc
-.xlsx
+*.xlsx
 .ods
 *.15
