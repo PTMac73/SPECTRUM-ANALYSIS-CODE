@@ -10,7 +10,7 @@
 # MakeList(n) - Makes lists of length n
 # GetParity(L) - Returns parity of state for a given L
 # PrintStates(node,J,L) - Prints each state in a list
-# CombineQuantities(c1,c2) - Concatenate two things into a list
+# CombineQuantities(*objs) - Concatenate n objects into a list
 # JLToJP(J,L) - Generates JP values from J and L
 # =============================================================================================== #
 # Patrick MacGregor
@@ -73,16 +73,15 @@ def PrintStates(J,L,node):
 	return
 	
 	
-# FUNCTION TO JOIN TWO LISTS (OR NOT AS THE CASE MAY BE) TOGETHER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-def CombineQuantities(c1,c2):
-	if type(c1) == list and type(c2) == list:
-		combination = c1 + c2
-	elif type(c1) == list and type(c2) != list:
-		combination = c1 + [c2]
-	elif type(c1) != list and type(c2) == list:
-		combination = [c1] + c2
-	else:
-		combination = [c1] + [c2]
+# FUNCTION TO JOIN N LISTS (OR NOT AS THE CASE MAY BE) TOGETHER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+def CombineQuantities(*objects):
+	combination = []
+	for i in objects:
+		if type(i) == list:
+			combination += i
+		else:	
+			combination.append(i)
+	
 	return combination
 
 # FUNCTION TO CREATE JP VALUES FROM J AND L ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -238,9 +237,12 @@ def GenerateSpinParity(N, Z, d):
 				J_comb_n = J[k_n]
 				node_comb_n = node[k_n]
 			else:
-				L_comb_n = CombineQuantities( L[k_n], L[k_n-1] )
-				J_comb_n = CombineQuantities( J[k_n], J[k_n-1] )
-				node_comb_n = CombineQuantities( node[k_n], node[k_n-1] )
+				#L_comb_n = CombineQuantities( L[k_n], L[k_n-1] )
+				#J_comb_n = CombineQuantities( J[k_n], J[k_n-1] )
+				#node_comb_n = CombineQuantities( node[k_n], node[k_n-1] )
+				L_comb_n = CombineQuantities( L[k_n+1], L[k_n], L[k_n-1] )
+				J_comb_n = CombineQuantities( J[k_n+1], J[k_n], J[k_n-1] )
+				node_comb_n = CombineQuantities( node[k_n+1], node[k_n], node[k_n-1] )
 
 			# Now zip together the states
 			Z_n = zip( L_comb_n, J_comb_n, node_comb_n )
@@ -254,7 +256,7 @@ def GenerateSpinParity(N, Z, d):
 			L_final_n, J_final_n, JP_final_n, node_final_n = ReduceStates( L_full_n, J_full_n, node_full_n)
 
 			# Print levels
-			#PrintStates( J_final_n, L_final_n, node_final_n )
+			PrintStates( J_final_n, L_final_n, node_final_n )
 			
 		# Calculate proton levels (if Z is odd)
 		if Z % 2 == 1:
@@ -323,107 +325,4 @@ def GetNodes(N, Z, d, L):
 	
 	return L_final, J_final, JP_final, node_final
 
-'''
-# Function to generate the values of L, JP, and nodes for the ptolemy input files.
-def generateLValues(N,d):
-	# 8 Gaps - generate list of length 7 to store each list
-	L = MakeList(8) # L is the angular momentum for each of the J-states
-	J = MakeList(8)	# J is the total spin x 2 (so can simply append "/2" after it), from low energy to high
-	node = MakeList(8) # node is the number of nodes in the wavefunction = principal quantum number - 1
-	
-	# Go between min and max
-	# 000 -> 002
-	L[0] = 0
-	node[0] = 0
-	
-	# 002 -> 008
-	J[1] = [3,1]
-	L[1] = [1,1]
-	node[1] = [0,0]
-	
-	# 008 -> 020
-	J[2] = [5,1,3]
-	L[2] = [2,0,2]
-	node[2] = [0,1,0]
-	
-	# 020 -> 028
-	J[3] = 7
-	L[3] = 3
-	node[3] = 0
 
-	# 028 -> 050
-	J[4] = [3,5,1,9]
-	L[4] = [1,3,1,4]
-	node[4] = [1,0,1,0]
-
-	# 050 -> 082
-	J[5] = [7,5,3,1,11]
-	L[5] = [4,2,2,0,5]
-	node[5] = [0,1,1,2,0]
-	
-	# 082 -> 126
-	J[6] = [9,7,5,3,1,13]
-	L[6] = [5,3,3,1,1,6]
-	node[6] = [0,1,1,2,2,0]
-
-	# 126 -> 184
-	J[7] = [9,5,11,7,1,3,15]
-	L[7] = [4,2,6,4,0,1,7]
-	node[7] = [1,2,0,1,3,1,0]
-	
-	# Now select the levels to test as a single array - define value to test magic numbers
-	k = 0
-	# Lose particle from target. Therefore look at hole states below magic number after N.
-	while N > magic_numbers[k]:
-		k += 1
-	# Now have magic number above N. 
-	if d == 0:
-		# Look at previous 2 states (k-1 and k-2)
-		pass
-	elif d == 1:
-		# Look at states above and below (k and k-1) or rescale for reusing code
-		k += 1
-	else:
-		sys.exit("Error. d can only have a value of 1 (add to target) or 0 (lose from target).")
-
-	# Now that k is scaled, calculate initial and final values
-	if k > 1:
-		# Combine lists for an output of all states that need to be considered
-		L_comb = CombineQuantities(L[k-2], L[k-1])
-		J_comb = CombineQuantities(J[k-2], J[k-1])
-		node_comb = CombineQuantities(node[k-2], node[k-1])
-	elif k == 1:
-		# Fewer states here, so only do the possible states
-		L_comb = L[k-1]
-		J_comb = J[k-1]
-		node_comb = node[k-1]
-	else:
-		if d == 0:
-			# This is when there are too few particles to get states
-			sys.exit("Error. Cannot lose particles from the target when there aren't any particles to give away!")
-		elif d == 1:
-			# This is when we run out of particles to add
-			sys.exit("Error. Mass is too high for me to handle!")
-	
-	# Now sort states in terms of L - zip together the J_states and nodes to L
-	Z = zip(L_comb,J_comb,node_comb)
-	
-	# Sort the states
-	L_full = [sorted(Z)[i][0] for i in range(0,len(Z))]
-	J_full = [sorted(Z)[i][1] for i in range(0,len(Z))]
-	node_full = [sorted(Z)[i][2] for i in range(0,len(Z))]
-	
-	# Now reduce states - want unique L's and nodes
-	indexArray = []
-	
-	# Find out where there are duplicate [L,node] states
-	for i in range(0,len(L_full)-1):
-		if [ L_full[i], node_full[i] ] == [ L_full[i+1], node_full[i+1] ]:
-			indexArray.append(i)
-	
-	# Print levels
-	#PrintStates(J_full,L_full,node_full)
-	
-	# Return the final quantities
-	return L_full, J_full, node_full
-'''
