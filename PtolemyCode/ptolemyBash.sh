@@ -57,7 +57,22 @@ detailed below:
 
 The <input_shell.sh> defines a number of global variables, which are then used
 in the main script. It also defines the location of a list of excitation 
-energies, as well as directories and the reaction parameters used in Python.
+energies, as well as directories and the reaction parameters used in Python. The
+global variables are:
+  POTENTIAL_IN               The abbreviation for the input potential. These are
+                               detailed in the opticalmodel_X.py files.
+  POTENTIAL_OUT              The abbreviation for the output potential. These 
+                               are detailed in the opticalmodel_X.py files.
+  PARAMETER_DIR              This is the directory where the energy list and the Python option
+                               file are stored.
+  INPUT_FILE_DIR             This is the directory where the Ptolemy input files
+                               are stored.
+  OUTPUT_FILE_DIR            This is the directory where the Ptolemy output 
+                               files are stored.
+  PTOLEMY_OPTION_FILE        Location of the Python reaction input parameter 
+                               file.
+
+These variables are then made global by using the "export" command.
 
 EOH
 		exit 0
@@ -161,7 +176,7 @@ fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE CSV ARRAY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # First write a file list for python to read
-CLEAN_NAME="cleanFileList.txt"
+CLEAN_NAME="CleanFileList.txt"
 if [ $SWITCH_CSV_ARRAY == 1 ]
 then
 	# Clear the cleanFileList

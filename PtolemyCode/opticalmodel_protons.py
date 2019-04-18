@@ -9,6 +9,19 @@
 from opticalmodel_globals import *
 import numpy as np
 
+# Define optical model dictionary
+proton_dct = {
+	"BG": 1,
+	"KD": 2,
+	"M": 3,
+	"P": 4,
+	"V": 5
+}
+
+# Return the names of the deuteron potentials alphabetically
+def ProtonModelNumber():
+	return [ "BecchettiGreenlees", "KoningDelaroche", "Menet", "Perey", "Varner" ]
+
 # =============================================================================================== #
 # Koning-Delaroche set
 def KoningDelaroche(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):

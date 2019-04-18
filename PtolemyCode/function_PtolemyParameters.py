@@ -45,44 +45,47 @@ from opticalmodel_globals import *
 
 
 # FUNCTIONS ===================================================================================== #
-# obtainPTList generates the input parameters for Ptolemy based on a given reaction
-def obtainPTList(reaction, A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, optical_model_in, optical_model_out):
+# ObtainPTList generates the input parameters for Ptolemy based on a given reaction
+def ObtainPTList( Ex, optical_model_in, optical_model_out, opt_dct ):
 	# Change the parameters based on the reaction
-	reaction_par = [A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product]
+	reaction_par = [ opt_dct["A"], opt_dct["Z"], opt_dct["ELAB"], Ex, opt_dct["M_Target"], opt_dct["M_Projectile"], opt_dct["M_Ejectile"], opt_dct["M_Product"] ]
 	# (d,p) reaction -----------------------------------------------------
-	if reaction == "dp":
+	if opt_dct["reaction_type"] == "dp":
 		# N.B. The target mass increases here
-		a = potentialSelect("d", optical_model_in, 0, reaction_par)
-		b = potentialSelect("p", optical_model_out, 1, reaction_par)
+		a = PotentialSelect("d", optical_model_in, 0, reaction_par)
+		b = PotentialSelect("p", optical_model_out, 1, reaction_par)
 
 	# (p,d) reaction -----------------------------------------------------		
-	elif reaction == "pd":
+	elif opt_dct["reaction_type"] == "pd":
 		# N.B. The target mass decreases here	
-		a = potentialSelect("p", optical_model_in, 0, reaction_par)
-		b = potentialSelect("d", optical_model_out, -1, reaction_par)
+		a = PotentialSelect("p", optical_model_in, 0, reaction_par)
+		b = PotentialSelect("d", optical_model_out, -1, reaction_par)
 
 	# (d,d) reaction -----------------------------------------------------
-	elif reaction == "dd":
+	elif opt_dct["reaction_type"] == "dd":
 		# N.B. The target mass stays the same here
-		a = potentialSelect("d", optical_model_in, 0, reaction_par)
-		b = potentialSelect("d", optical_model_out, 0, reaction_par)
+		a = PotentialSelect("d", optical_model_in, 0, reaction_par)
+		b = PotentialSelect("d", optical_model_out, 0, reaction_par)
 
 	# (h,a) reaction -----------------------------------------------------		
-	elif reaction == "ha":
+	elif opt_dct["reaction_type"] == "ha":
 		# N.B. The target mass decreases here
-		a = potentialSelect("h", optical_model_in, 0, reaction_par)
-		b = potentialSelect("a", optical_model_out, -1, reaction_par)
+		a = PotentialSelect("h", optical_model_in, 0, reaction_par)
+		b = PotentialSelect("a", optical_model_out, -1, reaction_par)
+
+	# Include the model names
+	name_list = ModelNames( opt_dct["reaction_type"] )
 	
 	# Now combine the two lists
 	s = []
 	for i in range(0, len(a)):
 		for j in range(0, len(b)):
 			s.append( a[i] + b[j] )
-	return s
+	return s, name_list
 
 
 # Select the optical model potential based on the particle and the optical model input
-def potentialSelect(particle, optical_model, massDiff, reaction_par):
+def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 	A = reaction_par[0]
 	Z = reaction_par[1]
 	Ebeam = reaction_par[2]
@@ -201,5 +204,49 @@ def potentialSelect(particle, optical_model, massDiff, reaction_par):
 
 	else:
 		raise ValueError("Not an allowed particle.")
+ 
+
+# Returns a list of the model names based on which one was used
+def ModelNames( reaction_type ):
+	# Returns the names of the two model potentials combined
+	p = ProtonModelNumber()
+	d = DeuteronModelNumber()
+
+	# TODO - WRITE THESE THINGS
+	h = []
+	a = []
+	name_list = []
+
+	# Select the right potentials
+	particle = []
+	for i in range(0, len(reaction_type)):
+		if "p" == reaction_type[i]:
+			particle.append(p)
+		elif "d" == reaction_type[i]:
+			particle.append(d)
+		elif "h" == reaction_type[i]:
+			particle.append(h)
+		elif "a" == reaction_type[i]:
+			particle.append(a)
+
+	# Check size of particle is correct
+	if len(particle) != 2:
+		print("TOO MANY MODELS!!")
+		exit(1)
+
+	# Check if same particle
+	if particle[0] == particle[1]:
+		flag_same_particle = 1
+	else:
+		flag_same_particle = 0
+
+
+	# Generate the name list, but constrain it to the same models if elastic scattering
+	for i in range(0, len(particle[0]) ):
+		for j in range(0, len(particle[1]) ):
+			if (flag_same_particle == 1 and i == j ) or flag_same_particle == 0:
+				name_list.append( particle[0][i] + "_" + particle[1][j] )
+	
+	return name_list
 
 

@@ -2,8 +2,8 @@
 # Writes a block of Ptolemy code for an input file
 # =============================================================================================== #
 # OTHER FUNCTIONS
-# fileNameCSV - Generates the file name used by the CSV files
-# fileNameIN - Generates the file name used by the Ptolemy input files
+# FileNameCSV - Generates the file name used by the CSV files
+# FileNameIN - Generates the file name used by the Ptolemy input files
 # =============================================================================================== #
 # Patrick MacGregor
 # Nuclear Physics Research Group
@@ -11,7 +11,7 @@
 # The University of Manchester
 # =============================================================================================== #
 # inFile -> The open file to which the output is written
-# ReactionFullName -> Full name of the nuclear reaction e.g. 122Sn(d,p)123Sn
+# reaction_full_name -> Full name of the nuclear reaction e.g. 122Sn(d,p)123Sn
 # jp ->	The spin parity of the state e.g. 11/2-
 # energy ->	The energy level of the state
 # ELAB -> The lab beam energy in MeV
@@ -22,21 +22,21 @@
 # =============================================================================================== #
 
 # Define a function to write a block of Ptolemy code
-def WritePtolemyBlock(inFile, ReactionFullName,jp,L,energy,ELAB,node,s,Asymptopia,last):
+def WritePtolemyBlock( inFile, jp, L, node, energy, s, opt_dct, last ):
 	# Write all the necessary lines to the file
 	inFile.write('''reset
 r0target
 print 0
 ''')
-	inFile.write("REACTION: " + ReactionFullName + "(" + jp + " " + str(energy) + ") ELAB=" + str(ELAB))
+	inFile.write("REACTION: " + opt_dct["reaction_full_name"] + "(" + jp + " " + str(energy) + ") ELAB=" + str(opt_dct["ELAB"]))
 	inFile.write('''
 PARAMETERSET dpsb labangles r0target lstep=1 lmin=0 lmax=30 maxlextrap=0
 PROJECTILE
 NODES = 0
 R = 1   A = 0.5   WAVEFUNCTION = av18   L = 0
 ''')
-	if Asymptopia > 0:
-		inFile.write("ASYMPTOPIA=" + str(Asymptopia) + "\n")
+	if opt_dct["Asymptopia"] > 0:
+		inFile.write("ASYMPTOPIA=" + str(opt_dct["Asymptopia"]) + "\n")
 	inFile.write(''';
 TARGET
 ''')
@@ -59,14 +59,34 @@ TARGET
 	for i in range(5,10):
 		inFile.write("\n" + s[i])
 	
-	# Finish the file
-	inFile.write('''
-;
-LABANGLES
-ANGLEMIN=0 ANGLEMAX=60 ANGLESTEP=1
-;
-writens crosssec
-''')
+	# Lab Angles?
+	inFile.write(";\n")
+	if opt_dct["LABANGLES"] == 1:
+		inFile.write("LABANGLES\n")
+	
+	# Minimum angle
+	if opt_dct["ANGLEMIN"] != -2.0:
+		inFile.write("ANGLEMIN=" + str(opt_dct["ANGLEMIN"]) + " " )
+	else:
+		inFile.write("ANGLEMIN=0 ")
+
+	# Maximum angle
+	if opt_dct["ANGLEMAX"] != -2.0:
+		inFile.write("ANGLEMAX=" + str(opt_dct["ANGLEMAX"]) + " " )
+	else:
+		inFile.write("ANGLEMAX=60 " )
+
+	# Angle step
+	if opt_dct["ANGLESTEP"] != -2.0:
+		inFile.write("ANGLESTEP=" + str(opt_dct["ANGLESTEP"]) + "\n" )
+	else:
+		inFile.write("ANGLESTEP=1\n")
+
+	# Finish the block
+	inFile.write(";\n")
+	inFile.write("writens crosssec\n")
+
+	# Write end?
 	if last == 1:
 		inFile.write("end")
 	else:
@@ -74,34 +94,47 @@ writens crosssec
 	return
 	
 # Function to generate filenames based on the type and the input quantities
-def fileNameCSV(reactionName,ELAB):
+def FileNameCSV(reaction_name,ELAB):
 	# CSV
 	# This contains the Ptolemy incoming and outgoing text data.
 	# It depends on the reaction and the energy of the beam only
-	CSV = reactionName + "-" + str(ELAB) + "MeV.csv"
+	CSV = reaction_name + "-" + str( ELAB ) + "MeV.csv"
 	return CSV
 	
-def decimalPointPos(numString):
+def DecimalPointPos(numString):
 	# Find decimal point position
-	pointPos = -1
+	point_pos = -1
 	for i in range(0,len(numString)):
 		if numString[i] == ".":
-			pointPos = i
+			point_pos = i
 			break
 	
-	return pointPos
+	return point_pos
 	
-def fileNameIN(reactionName,energy):
+def FileNameIN( reaction_name, energy, name_of_model ):
 	# Ptolemy input file
 	# This contains the code for the Ptolemy input file
 	# It depends on the reaction, and the energy of the state
 	
 	# Ensure that the energy contains 3 decimal places
 	energyString = str(round(energy,3))
-	while decimalPointPos(energyString) != len(energyString) - 4:
-		if decimalPointPos(energyString) == -1:
+	while DecimalPointPos(energyString) != len(energyString) - 4:
+		if DecimalPointPos(energyString) == -1:
 			energyString = energyString + ".000"
 		else:
 			energyString = energyString + "0"
-	inFileName = reactionName + "-" + energyString + ".in"
+	inFileName = reaction_name + "-" + name_of_model + "-" + energyString + ".in"
 	return inFileName
+
+
+
+
+
+
+
+
+
+
+
+
+

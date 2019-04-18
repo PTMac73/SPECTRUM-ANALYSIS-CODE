@@ -9,6 +9,21 @@
 from opticalmodel_globals import *
 import numpy as np
 
+# Define optical model dictionary
+deuteron_dct = {
+	"AC": 1,
+	"B": 2,
+	"DNR": 3,
+	"DR": 4,
+	"HSS": 5,
+	"LH": 6,
+	"PP": 7
+}
+
+# Return the names of the deuteron potentials alphabetically
+def DeuteronModelNumber():
+	return [ "AnCai", "Bojowald", "DaehnickNR", "DaehnickR", "HanShiShen", "LohrHaeberli", "PereyPerey" ] 
+
 # An and Cai
 def AnCai(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	# CHECK VALUE OF H2 - Energy changes if ejectile is deuteron
