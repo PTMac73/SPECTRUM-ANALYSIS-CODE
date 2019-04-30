@@ -11,13 +11,15 @@ import numpy as np
 
 # Define optical model dictionary
 deuteron_dct = {
-	"AC": 1,
-	"B": 2,
-	"DNR": 3,
-	"DR": 4,
-	"HSS": 5,
-	"LH": 6,
-	"PP": 7
+	"AC":  [0,1],
+	"B":   [1,2],
+	"DNR": [2,3],
+	"DR":  [3,4],
+	"HSS": [4,5],
+	"LH":  [5,6],
+	"PP":  [6,7],
+	"len":     7,
+	"ALL_D":[0,7]
 }
 
 # Return the names of the deuteron potentials alphabetically

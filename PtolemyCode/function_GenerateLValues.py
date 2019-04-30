@@ -237,12 +237,12 @@ def GenerateSpinParity(N, Z, d):
 				J_comb_n = J[k_n]
 				node_comb_n = node[k_n]
 			else:
-				#L_comb_n = CombineQuantities( L[k_n], L[k_n-1] )
-				#J_comb_n = CombineQuantities( J[k_n], J[k_n-1] )
-				#node_comb_n = CombineQuantities( node[k_n], node[k_n-1] )
-				L_comb_n = CombineQuantities( L[k_n+1], L[k_n], L[k_n-1] )
-				J_comb_n = CombineQuantities( J[k_n+1], J[k_n], J[k_n-1] )
-				node_comb_n = CombineQuantities( node[k_n+1], node[k_n], node[k_n-1] )
+				L_comb_n = CombineQuantities( L[k_n], L[k_n-1] )
+				J_comb_n = CombineQuantities( J[k_n], J[k_n-1] )
+				node_comb_n = CombineQuantities( node[k_n], node[k_n-1] )
+				#L_comb_n = CombineQuantities( L[k_n+1], L[k_n], L[k_n-1] )
+				#J_comb_n = CombineQuantities( J[k_n+1], J[k_n], J[k_n-1] )
+				#node_comb_n = CombineQuantities( node[k_n+1], node[k_n], node[k_n-1] )
 
 			# Now zip together the states
 			Z_n = zip( L_comb_n, J_comb_n, node_comb_n )
@@ -256,7 +256,7 @@ def GenerateSpinParity(N, Z, d):
 			L_final_n, J_final_n, JP_final_n, node_final_n = ReduceStates( L_full_n, J_full_n, node_full_n)
 
 			# Print levels
-			PrintStates( J_final_n, L_final_n, node_final_n )
+			#PrintStates( J_final_n, L_final_n, node_final_n )
 			
 		# Calculate proton levels (if Z is odd)
 		if Z % 2 == 1:

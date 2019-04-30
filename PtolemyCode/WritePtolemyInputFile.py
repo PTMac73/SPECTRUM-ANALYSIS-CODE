@@ -54,14 +54,13 @@ else:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAKE THE PTOLEMY FILE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Need to do the same inputs for a given excitation energy
 for i in range(0,len(energy)):
-	
 	# Generate the correct Ptolemy input parameter string
-	s, name_list = ObtainPTList(energy[i], potential_in, potential_out, opt_dct)	
-	
-	# Now need to loop over possible states
+	s, name_list, omn_list = ObtainPTList(energy[i], potential_in, potential_out, opt_dct)	
+
+	# Now need to loop over possible models
 	for a in range(0, len(s) ):
-		# Open the file	
-		inFile = open(INPUTFileDir + FileNameIN( opt_dct["reaction_name"], energy[i], name_list[a] ), "w" )
+		# Open the file
+		inFile = open(INPUTFileDir + FileNameIN( opt_dct["reaction_name"], energy[i], name_list[omn_list[a]] ), "w" )
 
 		# Loop over all states if J
 		for j in range(0,len(J)):

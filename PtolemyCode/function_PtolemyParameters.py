@@ -76,12 +76,16 @@ def ObtainPTList( Ex, optical_model_in, optical_model_out, opt_dct ):
 	# Include the model names
 	name_list = ModelNames( opt_dct["reaction_type"] )
 	
-	# Now combine the two lists
+	# Now combine the two lists of parameters
 	s = []
 	for i in range(0, len(a)):
 		for j in range(0, len(b)):
 			s.append( a[i] + b[j] )
-	return s, name_list
+
+	# Calculate the items for consideration in the list of optical models given
+	omn_list = GetModelNumberList( opt_dct["reaction_type"], optical_model_in, optical_model_out )
+
+	return s, name_list, omn_list
 
 
 # Select the optical model potential based on the particle and the optical model input
@@ -106,31 +110,24 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 	
 		if optical_model == "AC":
 			d_list.append( AnCai(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return d_list
 
 		elif optical_model == "PP":
 			d_list.append( PereyPerey(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return d_list
 
 		elif optical_model == "LH":
 			d_list.append( LohrHaeberli(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return d_list
 
 		elif optical_model == "HSS":
 			d_list.append( HanShiShen(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return d_list
 
 		elif optical_model == "B":
 			d_list.append( Bojowald(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return d_list
 
 		elif optical_model == "DNR":
 			d_list.append( DaehnickNR(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return d_list
 
 		elif optical_model == "DR":
 			d_list.append( DaehnickR(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return d_list
 
 		elif optical_model == "ALL-D":
 			d_list.append( HanShiShen(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
@@ -140,10 +137,13 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 			d_list.append( DaehnickNR(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 			d_list.append( LohrHaeberli(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 			d_list.append( PereyPerey(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return d_list
 
 		else:
 			raise ValueError("Not an allowed deuteron potential.")
+
+		return d_list
+
+
 	
 
 	# PROTONS
@@ -152,23 +152,18 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 
 		if optical_model == "KD":
 			p_list.append( KoningDelaroche(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return p_list
 
 		elif optical_model == "P":
 			p_list.append( Perey(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return p_list
 
 		elif optical_model == "M":
 			p_list.append( Menet(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return p_list
 
 		elif optical_model == "V":
 			p_list.append( Varner(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return p_list
 
 		elif optical_model == "BG":
 			p_list.append( BecchettiGreenlees(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return p_list
 		
 		elif optical_model == "ALL-P":
 			p_list.append( KoningDelaroche(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
@@ -176,10 +171,11 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 			p_list.append( Menet(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 			p_list.append( BecchettiGreenlees(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 			p_list.append( Perey(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return p_list
 			
 		else:
 			raise ValueError("Not an allowed proton potential.")
+
+		return p_list
 
 	
 	# HELIUM-3
@@ -187,24 +183,26 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 		h_list = []
 		if optical_model == "P":
 			h_list.append( Pang(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return h_list
 		
 		else:
 			raise ValueError("Not an allowed 3He potential.")
+
+		return h_list
 
 	# ALPHA
 	elif particle == "a":
 		a_list = []
 		if optical_model == "BP":
 			a_list.append( BassaniPicard(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			return a_list
 		
 		else:
 			raise ValueError("Not an allowed alpha potential.")
 
+		return a_list
+
 	else:
 		raise ValueError("Not an allowed particle.")
- 
+
 
 # Returns a list of the model names based on which one was used
 def ModelNames( reaction_type ):
@@ -248,5 +246,72 @@ def ModelNames( reaction_type ):
 				name_list.append( particle[0][i] + "_" + particle[1][j] )
 	
 	return name_list
+
+
+
+
+def GetModelNumberList( reaction_type, optical_model_in, optical_model_out ):
+	# Define the dictionaries to use
+	if reaction_type == "dp":
+		dct_1 = deuteron_dct
+		dct_2 = proton_dct	
+
+	elif reaction_type == "pd":
+		dct_1 = proton_dct
+		dct_2 = deuteron_dct
+	
+	else:
+		raise ValueError("Not an allowed reaction type.")
+		exit(1)
+
+	# Now create the list
+	omn_list = []
+	for i in range( dct_1[ optical_model_in ][0], dct_1[ optical_model_in ][1] ):
+		for j in range( dct_2[ optical_model_out ][0], dct_2[ optical_model_out ][1] ):
+			omn_list.append( dct_2["len"]*i + j )
+
+	return omn_list
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
