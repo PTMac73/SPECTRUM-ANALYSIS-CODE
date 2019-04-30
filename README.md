@@ -5,6 +5,9 @@ These codes help me to perform various tasks to do with data analysis, from theo
 ### PtolemyCode
 This is a large project to help analyse data using the program Ptolemy (a manual for Ptolemy can be found [here](https://www.phy.anl.gov/theory/ptolemy/ptolemy_manual.pdf "Ptolemy Manual") ). The heart of this code is the "ptolemyBash.sh" script, which takes a pre-defined reaction, and generates a number of Ptolemy output files, which are then wrapped up into a CSV file which can be pasted into a spreadsheet program, where the analysis continues.
 
+### XMGraceMg
+This is an auto-plotting tool that I've written to take data in a particular form from a CSV file (that comes from a spreadsheet), and plots the various parts of it in XMGrace. The Mg just denotes the project, as I have different versions for different projects, though hoping to combine into one tool.
+
 ---
 
 ## Repetitive task tools
