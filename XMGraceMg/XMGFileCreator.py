@@ -29,7 +29,7 @@ def CreateLString(L):
 
 def CreateDATFileName( model, energy, L, L_column, ExorPT ):
 	if model == "NA" or model == "":
-		file_name = "28Mg-" + ExorPT + "-NA-" + str(energy) + "-" + CreateLString( GetColumn(L, L_column ) ) + ".dat"
+		file_name = "28Mg-" + ExorPT + "-[NA]-" + str(energy) + "-" + CreateLString( GetColumn(L, L_column ) ) + ".dat"
 	else:
 		file_name = "28Mg-" + ExorPT + "-["  + model + "]-" + str(energy) + "-" + CreateLString( GetColumn(L, L_column ) ) + ".dat"
 	

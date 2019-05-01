@@ -8,13 +8,15 @@
 # =============================================================================================== #
 # GENERATE PREFIX
 PREFIX=`date +%Y∙%V_%d%b%y-`
+FIGURE_DIR="/home/ptmac/Documents/Notebooks/Digital-Lab-Book/Figures"
 
 # RENAME FILES
 for f in $@
 do
 	if [ -e $f ]
 	then
-		mv "${f}" "${PREFIX}${f}"
+		mv "${f}" "${FIGURE_DIR}/${PREFIX}${f}"
+		echo "${PREFIX}${f}" | xclip
 	else
 		echo "${f} does not exist!"
 	fi
