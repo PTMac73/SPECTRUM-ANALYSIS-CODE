@@ -23,6 +23,16 @@
 
 # Define a function to write a block of Ptolemy code
 def WritePtolemyBlock( inFile, jp, L, node, energy, s, opt_dct, last ):
+	# Choose Ptolemy block to write based on whether it is elastic scattering or not
+	if opt_dct["reaction_type"] == "dd":
+		WritePtolemyBlockElastic( inFile, jp, L, node, energy, s, opt_dct, last )
+	else:
+		WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, last )
+
+	return
+
+
+def WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, last ):
 	# Write all the necessary lines to the file
 	inFile.write('''reset
 r0target
@@ -92,7 +102,53 @@ TARGET
 	else:
 		inFile.write("")
 	return
+
+
+
+def WritePtolemyBlockElastic( inFile, jp, L, node, energy, s, opt_dct, last ):
+	# Write all the necessary lines to the file
+	inFile.write("reset\n")
+
+	# Convert the full reaction name into something easier
+	inFile.write("CHANNEL " + ReactionToChannel( opt_dct["reaction_full_name"] )+ "\n" )
+
+	# Write incoming and outgoing things
+	for i in range(0,5):
+		inFile.write(s[i] + "\n")
 	
+	inFile.write(";\nELASTIC SCATTERING\n")
+	# Minimum angle
+	if opt_dct["ANGLEMIN"] != -2.0:
+		inFile.write("ANGLEMIN=" + str(opt_dct["ANGLEMIN"]) + " " )
+	else:
+		inFile.write("ANGLEMIN=0 ")
+
+	# Maximum angle
+	if opt_dct["ANGLEMAX"] != -2.0:
+		inFile.write("ANGLEMAX=" + str(opt_dct["ANGLEMAX"]) + " " )
+	else:
+		inFile.write("ANGLEMAX=60 " )
+
+	# Angle step
+	if opt_dct["ANGLESTEP"] != -2.0:
+		inFile.write("ANGLESTEP=" + str(opt_dct["ANGLESTEP"]) + "\n" )
+	else:
+		inFile.write("ANGLESTEP=1\n")
+
+	# Finish the block
+	inFile.write(";\n")
+	inFile.write("writens crosssec\n")
+
+	# Write end?
+	if last == 1:
+		inFile.write("end")
+	else:
+		inFile.write("")
+	return
+	
+
+
+
 # Function to generate filenames based on the type and the input quantities
 def FileNameCSV(reaction_name,ELAB):
 	# CSV
@@ -127,7 +183,12 @@ def FileNameIN( reaction_name, energy, name_of_model ):
 	return inFileName
 
 
-
+def ReactionToChannel( reaction_full_name ):
+	# Reaction should be of form A(b,b)A
+	heavy = reaction_full_name[0:reaction_full_name.find("(")]
+	light = reaction_full_name[reaction_full_name.find("(")+1:reaction_full_name.find(",")]
+	channel = light + " + " + heavy
+	return channel
 
 
 

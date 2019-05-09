@@ -29,7 +29,7 @@ def GetOptions(inFileDir):
 		"ANGLEMIN": -2.0,
 		"ANGLEMAX": -2.0,
 		"LABANGLES": -2,
-		"ANGLESTEP": -2.0
+		"ANGLESTEP": -2.0,
 	}
 	
 	# Open the file

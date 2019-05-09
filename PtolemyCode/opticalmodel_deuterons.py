@@ -19,7 +19,7 @@ deuteron_dct = {
 	"LH":  [5,6],
 	"PP":  [6,7],
 	"len":     7,
-	"ALL_D":[0,7]
+	"ALL-D":[0,7]
 }
 
 # Return the names of the deuteron potentials alphabetically

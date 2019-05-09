@@ -55,8 +55,8 @@ else:
 # Need to do the same inputs for a given excitation energy
 for i in range(0,len(energy)):
 	# Generate the correct Ptolemy input parameter string
-	s, name_list, omn_list = ObtainPTList(energy[i], potential_in, potential_out, opt_dct)	
-
+	s, name_list, omn_list = ObtainPTList(energy[i], potential_in, potential_out, opt_dct)
+	
 	# Now need to loop over possible models
 	for a in range(0, len(s) ):
 		# Open the file

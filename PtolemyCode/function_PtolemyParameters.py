@@ -21,11 +21,18 @@
 # =============================================================================================== #
 # ALLOWED POTENTIALS
 # Protons
+#  * Becchetti and Greenlees (BG)
 #  * Koning and Delaroche (KD)
+#  * Menet (M)
 #  * Perey (P)
+#  * Varner (V)
 # 
 # Deuterons
 #  * An and Cai (AC)
+#  * Bojowald (B)
+#  * Daehnick (relativistic) (DR)
+#  * Daehnick (non-relativistic) (DNR)
+#  * Han, Shi, and Shen (HSS)
 #  * Perey and Perey (PP)
 #  * Lohr and Haeberli (LH)
 #
@@ -49,6 +56,10 @@ from opticalmodel_globals import *
 def ObtainPTList( Ex, optical_model_in, optical_model_out, opt_dct ):
 	# Change the parameters based on the reaction
 	reaction_par = [ opt_dct["A"], opt_dct["Z"], opt_dct["ELAB"], Ex, opt_dct["M_Target"], opt_dct["M_Projectile"], opt_dct["M_Ejectile"], opt_dct["M_Product"] ]
+
+	# Define a flag if reaction is elastic
+	flag_elastic = 0
+
 	# (d,p) reaction -----------------------------------------------------
 	if opt_dct["reaction_type"] == "dp":
 		# N.B. The target mass increases here
@@ -64,8 +75,9 @@ def ObtainPTList( Ex, optical_model_in, optical_model_out, opt_dct ):
 	# (d,d) reaction -----------------------------------------------------
 	elif opt_dct["reaction_type"] == "dd":
 		# N.B. The target mass stays the same here
+		# THIS IS ELASTIC SCATTERING
 		a = PotentialSelect("d", optical_model_in, 0, reaction_par)
-		b = PotentialSelect("d", optical_model_out, 0, reaction_par)
+		flag_elastic = 1
 
 	# (h,a) reaction -----------------------------------------------------		
 	elif opt_dct["reaction_type"] == "ha":
@@ -77,10 +89,13 @@ def ObtainPTList( Ex, optical_model_in, optical_model_out, opt_dct ):
 	name_list = ModelNames( opt_dct["reaction_type"] )
 	
 	# Now combine the two lists of parameters
-	s = []
-	for i in range(0, len(a)):
-		for j in range(0, len(b)):
-			s.append( a[i] + b[j] )
+	if flag_elastic == 0:
+		s = []
+		for i in range(0, len(a)):
+			for j in range(0, len(b)):
+				s.append( a[i] + b[j] )
+	else:
+		s = a
 
 	# Calculate the items for consideration in the list of optical models given
 	omn_list = GetModelNumberList( opt_dct["reaction_type"], optical_model_in, optical_model_out )
@@ -252,6 +267,7 @@ def ModelNames( reaction_type ):
 
 def GetModelNumberList( reaction_type, optical_model_in, optical_model_out ):
 	# Define the dictionaries to use
+	flag_elastic = 0
 	if reaction_type == "dp":
 		dct_1 = deuteron_dct
 		dct_2 = proton_dct	
@@ -259,6 +275,11 @@ def GetModelNumberList( reaction_type, optical_model_in, optical_model_out ):
 	elif reaction_type == "pd":
 		dct_1 = proton_dct
 		dct_2 = deuteron_dct
+
+	elif reaction_type == "dd":
+		dct_1 = deuteron_dct
+		dct_2 = deuteron_dct
+		flag_elastic = 1
 	
 	else:
 		raise ValueError("Not an allowed reaction type.")
@@ -266,9 +287,15 @@ def GetModelNumberList( reaction_type, optical_model_in, optical_model_out ):
 
 	# Now create the list
 	omn_list = []
-	for i in range( dct_1[ optical_model_in ][0], dct_1[ optical_model_in ][1] ):
-		for j in range( dct_2[ optical_model_out ][0], dct_2[ optical_model_out ][1] ):
-			omn_list.append( dct_2["len"]*i + j )
+	if flag_elastic == 0:
+		for i in range( dct_1[ optical_model_in ][0], dct_1[ optical_model_in ][1] ):
+			for j in range( dct_2[ optical_model_out ][0], dct_2[ optical_model_out ][1] ):
+				omn_list.append( dct_2["len"]*i + j )
+	else:
+		for i in range( dct_1[ optical_model_in ][0], dct_1[ optical_model_in ][1] ):
+			omn_list.append(i)
+
+		
 
 	return omn_list
 
