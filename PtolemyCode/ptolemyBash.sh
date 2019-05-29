@@ -16,9 +16,9 @@
 # SWITCHES
 SWITCH_DELETE_FILE=1
 SWITCH_WRITE_INPUT=1
-SWITCH_RUN_PTOLEMY=0
-SWITCH_CLEAN=0
-SWITCH_CSV_ARRAY=0
+SWITCH_RUN_PTOLEMY=1
+SWITCH_CLEAN=1
+SWITCH_CSV_ARRAY=1
 
 # FIXED DIRECTORIES
 PTOLEMY_DIR=~/Software/Ptolemy/
@@ -169,7 +169,7 @@ if [ $SWITCH_CLEAN == 1 ]
 then
 	for OUTFILE in "${OUTPUT_FILE_DIR}"*.out; do
 		# Run ptclean script
-		python "${PTOLEMY_DIR}"ptclean.py "${OUTFILE}"
+		python "${PTOLEMY_ANALYSIS_DIR}"ptclean.py "${OUTFILE}"
 		echo "Clean file ${OUTFILE##/home*/}-clean created"
 	done
 fi

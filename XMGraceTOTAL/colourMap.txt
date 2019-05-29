@@ -1,0 +1,9 @@
+ L | Colour 
+---+--------
+ 0 | Black  
+ 1 | Orange 
+ 2 | Red    
+ 3 | Brown  
+ 4 | Green  
+ 5 | Blue   
+ 6 | Violet 

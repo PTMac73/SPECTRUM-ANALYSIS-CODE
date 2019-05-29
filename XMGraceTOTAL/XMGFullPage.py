@@ -54,27 +54,12 @@ def ConvertL( string ):
 		temp_list[i] = int(temp_list[i])
 	return temp_list
 
-# Create a list to define the order of filling graphs in XMGrace, given a
-# width, w, and a number, N
-'''
-def listGraphOrder(w,N):
-	# Calculate vertical
-	v = int(np.ceil(N/w))
-	
-	# Declare a list
-	orderList = makeList(w*v)
-	
-	# Now define the order
-	k = 0
-	for i in range(0,v):
-		for j in range(0,w):
-			orderList[k] = (j+1)*v - i - 1
-			k += 1
-	
-	# Remove any leftover states
-	orderList = orderList[0:N]
-	return orderList, v
-'''
+def ReturnMaxIndex( MAX, i ):
+	if MAX == "ex":
+		return 2*i
+	elif MAX == "pt":
+		return 2*i + 1
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Define the input files
 inFileDir = sys.argv[1]
@@ -83,9 +68,11 @@ baseFileDir = sys.argv[3]
 energy = inFileDir[len(inFileDir)-10:len(inFileDir)-4]
 w = int(sys.argv[4])
 v = int(sys.argv[5])
+MAX = sys.argv[6]
 
 # Isolate which number it is
 tempString = outFileDir.split("/")[-1]
+print(tempString)
 fileNum = ""
 for i in range(0,len(tempString)):
 	if tempString[i].isdigit():
@@ -124,17 +111,7 @@ for i in range(0,count):
 
 	# Find the energy
 	energy.append( float(tempString[dash_positions[1]+1:dash_positions[2]]))
-	'''
-	# Find the angular momentum
-	Lstart = dash_positions[3] + 1
 	
-	# Now test if there are two states to fit
-	if tempString[Lstart+1:Lstart+2] == "~":
-		LValue = [ int(tempString[Lstart:Lstart+1]), int(tempString[Lstart+2:Lstart+3]) ]
-	else:
-		LValue = int(tempString[Lstart:Lstart+1])
-	L.append(LValue)
-	'''
 	# Find the angular momenta
 	L_string = tempString[bracket_positions[2]+1:bracket_positions[3]]
 	L.append( ConvertL( L_string ) )
@@ -147,25 +124,70 @@ if type(w) != int:
 if type(v) != int or v == -1:
 	v = int(np.ceil(float(count)/float(w)))		# Number of graphs across page vertically
 
-# Find the maximum value for every experimental file
-maxValue = []
+# Find the maximum value for every file
+max_value = []
+angle_min = 5
+angle_max = 10
 
-# See if the max value in experimental is bigger
+# Find the maximum value from experimental file
 for i in range(0,int(len(fileDirs)/2)):
-	findMaxFile = open(fileDirs[2*i])
-	tempString1 = "0"
-	for line in findMaxFile:
-		tempString0 = line.split("\t")[1]
-		tempString0 = tempString0.rstrip("\n")
-		tempString2 = line.split("\t")[2]
-		tempString2 = tempString2.rstrip("\n")
+	# Open the correct file
+	find_ex_max_file = open(fileDirs[ReturnMaxIndex( "ex", i ) ])
+
+	# Define the current maximum
+	current_max = 0
+
+	# Find a bigger maximum
+	for line in find_ex_max_file:
+		temp_list = line.rstrip("\n").split("\t")
+
+		if len( temp_list ) > 1:
+			temp_num = float(temp_list[1])
+			if len( temp_list ) > 2:
+				temp_num += float(temp_list[2])
+			
+			try:
+				if temp_num > current_max:
+					current_max = temp_num
+			except:
+				pass
+
+	find_ex_max_file.close()
+
+	
+	# Open the Ptolemy file
+	find_pt_max_file = open(fileDirs[ReturnMaxIndex( "pt", i ) ])
+
+	# Find the minimum and maximum angle
+	for line in find_pt_max_file:
+		temp_list = line.rstrip("\n").split("\t")
+		
 		try:
-			if float(tempString0) + float(tempString2) > float(tempString1):
-				tempString1 = str(float(tempString0)+float(tempString2))
+			if float(temp_list[0]) < angle_min:
+				angle_min = float(temp_list[0])
+			if float(temp_list[0]) > angle_max:
+				angle_max = float(temp_list[0])
 		except:
 			pass
-	maxValue.append(tempString1)
-	findMaxFile.close()
+		
+		if MAX == "pt":
+			# Find a bigger maximum if in options
+			if len( temp_list ) > 1:
+				temp_num = float(temp_list[1])
+				if len( temp_list ) > 2:
+					temp_num += float(temp_list[2])
+				
+				try:
+					if temp_num > current_max:
+						current_max = temp_num
+				except:
+					pass
+
+	# Close the Ptolemy file
+	find_pt_max_file.close()
+
+	# Now append the maximum value
+	max_value.append(current_max)
 
 ##### MAKE THE BATCH FILE
 # First prepare parameters to go into file
@@ -227,7 +249,7 @@ S0 SYMBOL FILL 1
 
 	# GLOBAL
 	# Calculate the world coordinates
-	height_of_box = 1.3*float( maxValue[i] )
+	height_of_box = 1.3*float( max_value[i] )
 
 	# x-axis ticks
 	outFile.write('''XAXIS TICK MAJOR 20
@@ -260,7 +282,7 @@ STRING JUST 9
 ''')
 	outFile.write("STRING CHAR SIZE " + fontSize + "\n")
 	outFile.write("STRING G" + str(i) + "\n")
-	outFile.write("STRING 85, " + str(1.2*float(maxValue[i])) + "\n")
+	outFile.write("STRING " + str(angle_max - 5) + ", " + str(1.2*float(max_value[i])) + "\n")
 	if printNumOnGraph == 1:
 		outFile.write("STRING DEF \"" + "(" + str(w*v*(numFile-1) + i + 1) + ") " + str(energy[i]) + "\"\n")
 	else:
@@ -278,11 +300,11 @@ STRING JUST 9
 		''')
 		outFile.write("STRING CHAR SIZE 0.450\n")
 		outFile.write("STRING G" + str(i) + "\n")
-		outFile.write("STRING 45, " + str(1.35*float(maxValue[i])) + "\n")
+		outFile.write("STRING 45, " + str(1.35*float(max_value[i])) + "\n")
 		outFile.write("STRING DEF \"" + model_name[i] + "\"\n" )
 
 	# Define the world coordinates
-	outFile.write("WORLD 0, 0, 90, " + str(height_of_box) + "\n")
+	outFile.write("WORLD 0, " + str(angle_min) + ", " + str(angle_max) + ", " + str(height_of_box) + "\n")
 
 	# Calculate if there are any states to kill
 	if (w*v) - count > 0:

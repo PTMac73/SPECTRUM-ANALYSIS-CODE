@@ -1,5 +1,5 @@
 #!/bin/bash
-# XMG-MgStates.sh
+# XMG-TOTAL.sh
 # Takes the assigned peak files and compiles them all into one graph
 # =============================================================================================== #
 # Patrick MacGregor
@@ -11,7 +11,7 @@
 # EXPERIMENTAL_DATA is of the form "X[TAB]Y[TAB]E"
 # =============================================================================================== #
 # Fixed parameters
-SCRIPT_DIR="/home/ptmac/Documents/SPECTRUM_ANALYSIS_CODE/XMGraceMg/"
+SCRIPT_DIR="/home/ptmac/Documents/SPECTRUM_ANALYSIS_CODE/XMGraceTOTAL/"
 
 # SWITCHES
 SWITCH_DELETE_FILE=1
@@ -27,7 +27,10 @@ X_AXIS_FOR_EACH=1
 
 # Number of graphs per page (vertical graphs = -1 => do a full page)
 HORZ_GRAPH_NUM=4
-VERT_GRAPH_NUM=3
+VERT_GRAPH_NUM=6
+
+# MAX value tester
+MAX="ex"
 
 # Temporary number that works with test_if_num function
 TEMP_NUM=0
@@ -70,8 +73,14 @@ test_if_num(){
 test_if_dir(){
 	if [ ! -d "${1}" ]
 	then
+		if [ -z "${1}" ]
+		then
+		# Just blank - exit with usage
+		usage
+		exit 1
+		
 		# If not directory, test if it is a file and take parent directory
-		if [ -f "${1}" ]
+		elif [ -f "${1}" ]
 		then
 			echo "File given - taking parent directory..."
 			FILE_DIR="${1%/*}/"
@@ -91,14 +100,33 @@ test_if_dir(){
 	fi
 }
 
+# Create usage function
+usage(){
+	echo "Help file needed"
+}
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OPTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+# Exit if no options given
+if [ -z "$1" ]
+then
+	usage
+	exit 1
+fi
+
 for i in "$@"
 do
+	# Exit if no options given
+	if [ -z "$i" ]
+	then
+		usage
+		exit 1
+	fi
+	
 	case "$i" in
 
 		# Run helpfile
 		-h|--help )
-			echo "Help file needed"
+			usage
 			exit 0
 			;;
 
@@ -113,8 +141,24 @@ do
 		# Change number vertically
 		--vert=*)
 			VERT_GRAPH_NUM="${i#*=}"
-			test_if_num $VERT_GRAPH_NUM 3
+			test_if_num $VERT_GRAPH_NUM 6
 			VERT_GRAPH_NUM=$TEMP_NUM
+			shift
+			;;
+
+		# Choose what defines the maximum (default is experiment (ex))
+		--max=*)
+			if [[ "${i#*=}" == "pt" || "${i#*=}" == "PT" ]]
+			then
+				MAX="pt"
+			elif [[ "${i#*=}" == "ex" || "${i#*=}" == "EX" ]]
+			then
+				MAX="ex"
+			else
+				echo "Unrecognised maximum here".
+				usage
+				exit 1
+			fi
 			shift
 			;;
 
@@ -284,7 +328,7 @@ then
 		
 		if [ $X_AXIS_FOR_EACH = 1 ]
 		then
-			python "${SCRIPT_DIR}"XMGFullPage.py "${FILE_LIST}${j}${i}.txt" "${B_FILE}${j}${i}.txt" "${BASE_FILE}" "${HORZ_GRAPH_NUM}" "${VERT_GRAPH_NUM}"
+			python "${SCRIPT_DIR}"XMGFullPage.py "${FILE_LIST}${j}${i}.txt" "${B_FILE}${j}${i}.txt" "${BASE_FILE}" "${HORZ_GRAPH_NUM}" "${VERT_GRAPH_NUM}" "${MAX}"
 		else
 			# TODO NEED TO WRITE THIS FEATURE
 			#python "${SCRIPT_DIR}"XMGFullPageCompact.py "${FILE_LIST}${j}${i}.txt" "${B_FILE}${j}${i}.txt" "${BASE_FILE}"

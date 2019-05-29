@@ -112,6 +112,9 @@ def WritePtolemyBlockElastic( inFile, jp, L, node, energy, s, opt_dct, last ):
 	# Convert the full reaction name into something easier
 	inFile.write("CHANNEL " + ReactionToChannel( opt_dct["reaction_full_name"] )+ "\n" )
 
+	# Write the lab energy
+	inFile.write("ELAB=" + str(opt_dct["ELAB"]) + "\n" )
+
 	# Write incoming and outgoing things
 	for i in range(0,5):
 		inFile.write(s[i] + "\n")
