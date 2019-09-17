@@ -28,6 +28,7 @@ X_AXIS_FOR_EACH=1
 # Number of graphs per page (vertical graphs = -1 => do a full page)
 HORZ_GRAPH_NUM=4
 VERT_GRAPH_NUM=6
+LOGY=0
 
 # MAX value tester
 MAX="ex"
@@ -162,6 +163,11 @@ do
 			shift
 			;;
 
+		--logy )
+			LOGY=1
+			shift
+		;;
+
 		# File directory the only other thing
 		*)	
 			test_if_dir "${i}"
@@ -169,7 +175,6 @@ do
 			;;
 	esac
 done
-
 
 # SET DIRECTORIES
 BASE_FILE="${FILE_DIR}/base.dat"
@@ -328,7 +333,7 @@ then
 		
 		if [ $X_AXIS_FOR_EACH = 1 ]
 		then
-			python "${SCRIPT_DIR}"XMGFullPage.py "${FILE_LIST}${j}${i}.txt" "${B_FILE}${j}${i}.txt" "${BASE_FILE}" "${HORZ_GRAPH_NUM}" "${VERT_GRAPH_NUM}" "${MAX}"
+			python "${SCRIPT_DIR}"XMGFullPage.py "${FILE_LIST}${j}${i}.txt" "${B_FILE}${j}${i}.txt" "${BASE_FILE}" "${HORZ_GRAPH_NUM}" "${VERT_GRAPH_NUM}" "${MAX}" "${LOGY}"
 		else
 			# TODO NEED TO WRITE THIS FEATURE
 			#python "${SCRIPT_DIR}"XMGFullPageCompact.py "${FILE_LIST}${j}${i}.txt" "${B_FILE}${j}${i}.txt" "${BASE_FILE}"

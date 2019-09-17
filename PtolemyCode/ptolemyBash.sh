@@ -47,29 +47,29 @@ ptolemyBash controls the creation of Ptolemy input and output files. This is
 done through the <input_shell.sh> script, and some other pre-defined scripts.
 The stages of the script can be controlled with switches at the top, and are
 detailed below:
-  (1) DELETE all previous input and ouput files.
+  (1) DELETE all previous input and output files.
   (2) WRITE new input files for the given input.
   (3) RUN Ptolemy on all of the input files, generating output files.
-  (4) CLEAN all the new ouput files so that all of the desired numbers are
+  (4) CLEAN all the new output files so that all of the desired numbers are
       extracted.
   (5) COMBINE all of the output files into a .csv file to be pasted into a 
       spreadsheet.
 
 The <input_shell.sh> defines a number of global variables, which are then used
 in the main script. It also defines the location of a list of excitation 
-energies, as well as directories and the reaction parameters used in Python. The
+energies, as well as directories and the reaction parameters used in python2. The
 global variables are:
   POTENTIAL_IN               The abbreviation for the input potential. These are
                                detailed in the opticalmodel_X.py files.
   POTENTIAL_OUT              The abbreviation for the output potential. These 
                                are detailed in the opticalmodel_X.py files.
-  PARAMETER_DIR              This is the directory where the energy list and the Python option
+  PARAMETER_DIR              This is the directory where the energy list and the python2 option
                                file are stored.
   INPUT_FILE_DIR             This is the directory where the Ptolemy input files
                                are stored.
   OUTPUT_FILE_DIR            This is the directory where the Ptolemy output 
                                files are stored.
-  PTOLEMY_OPTION_FILE        Location of the Python reaction input parameter 
+  PTOLEMY_OPTION_FILE        Location of the python2 reaction input parameter 
                                file.
 
 These variables are then made global by using the "export" command.
@@ -139,13 +139,13 @@ fi
 # Run ptolemyMaster.py -> writes input file
 if [ $SWITCH_WRITE_INPUT == 1 ]
 then
-	python "${PTOLEMY_ANALYSIS_DIR}WritePtolemyInputFile.py" "${PTOLEMY_OPTION_FILE}"
+	python2 "${PTOLEMY_ANALYSIS_DIR}WritePtolemyInputFile.py" "${PTOLEMY_OPTION_FILE}"
 fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ RUN PTOLEMY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Run ptolemy for each of the input files and store in the right folder
 if [ $SWITCH_RUN_PTOLEMY == 1 ]
 then
-	for FILE in "${INPUT_FILE_DIR}"*.in ; do
+	for FILE in "${INPUT_FILE_DIR}/"*.in ; do
 		# Get length of input file name
 		FULL_LENGTH="${#FILE}"
 	
@@ -156,10 +156,10 @@ then
 		OUTPUT_NAME="${FILE:FOLDER_LENGTH:OUTPUT_LENGTH}.out"
 		
 		# Run Ptolemy
-		"${PTOLEMY_DIR}"ptolemy <"${FILE}">"${OUTPUT_FILE_DIR}${OUTPUT_NAME}"
+		"${PTOLEMY_DIR}"ptolemy <"${FILE}">"${OUTPUT_FILE_DIR}/${OUTPUT_NAME}"
 	
 		# Echo message
-		FULLFILE="${OUTPUT_FILE_DIR}${OUTPUT_NAME}"
+		FULLFILE="${OUTPUT_FILE_DIR}/${OUTPUT_NAME}"
 		echo "Created ${FULLFILE##/home*/}"
 	done
 fi
@@ -167,35 +167,35 @@ fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ RUN PTCLEAN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 if [ $SWITCH_CLEAN == 1 ]
 then
-	for OUTFILE in "${OUTPUT_FILE_DIR}"*.out; do
+	for OUTFILE in "${OUTPUT_FILE_DIR}/"*.out; do
 		# Run ptclean script
-		python "${PTOLEMY_ANALYSIS_DIR}"ptclean.py "${OUTFILE}"
+		python2 "${PTOLEMY_ANALYSIS_DIR}"ptclean.py "${OUTFILE}"
 		echo "Clean file ${OUTFILE##/home*/}-clean created"
 	done
 fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE CSV ARRAY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-# First write a file list for python to read
+# First write a file list for python2 to read
 CLEAN_NAME="CleanFileList.txt"
 if [ $SWITCH_CSV_ARRAY == 1 ]
 then
 	# Clear the cleanFileList
-	if [ -e "${OUTPUT_FILE_DIR}${CLEAN_NAME}" ]
+	if [ -e "${OUTPUT_FILE_DIR}/${CLEAN_NAME}" ]
 	then
-		rm "${OUTPUT_FILE_DIR}${CLEAN_NAME}"
+		rm "${OUTPUT_FILE_DIR}/${CLEAN_NAME}"
 	fi
 	
 	# Create new clean file list
-	touch "${OUTPUT_FILE_DIR}${CLEAN_NAME}"
+	touch "${OUTPUT_FILE_DIR}/${CLEAN_NAME}"
 	
 	# Fill the clean file list
-	for OUTCLEAN in "${OUTPUT_FILE_DIR}"*.out-clean; do
-		echo $OUTCLEAN >> "${OUTPUT_FILE_DIR}${CLEAN_NAME}"
+	for OUTCLEAN in "${OUTPUT_FILE_DIR}/"*.out-clean; do
+		echo $OUTCLEAN >> "${OUTPUT_FILE_DIR}/${CLEAN_NAME}"
 	done
 	
-	# Now run the python script to create the mahoosive CSV file
-	CSV_NAME="${OUTPUT_FILE_DIR}PT_Raw.csv"
-	python "${PTOLEMY_ANALYSIS_DIR}"CSVFileCreator.py "${OUTPUT_FILE_DIR}${CLEAN_NAME}" "${CSV_NAME}"
+	# Now run the python2 script to create the mahoosive CSV file
+	CSV_NAME="${OUTPUT_FILE_DIR}/PT_Raw.csv"
+	python2 "${PTOLEMY_ANALYSIS_DIR}"CSVFileCreator.py "${OUTPUT_FILE_DIR}/${CLEAN_NAME}" "${CSV_NAME}"
 fi
 
 

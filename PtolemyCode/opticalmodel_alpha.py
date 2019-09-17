@@ -9,6 +9,17 @@
 from opticalmodel_globals import *
 import numpy as np
 
+alpha_dct = {
+	"BP":    [0,1],
+	"len":       1,
+	"ALL_A": [0,1]
+}
+
+
+# Return the names of the helion potentials alphabetically
+def AlphaModelNumber():
+	return [ "BassaniPicard" ]
+
 # bassaniPicard is the potential used for a
 def BassaniPicard(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	# CHECK VALUE OF H

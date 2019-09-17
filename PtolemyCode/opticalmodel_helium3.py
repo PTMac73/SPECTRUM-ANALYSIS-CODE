@@ -9,6 +9,17 @@
 from opticalmodel_globals import *
 import numpy as np
 
+helion_dct = {
+	"P":     [0,1],
+	"len":       1,
+	"ALL_H": [0,1]
+}
+
+
+# Return the names of the helion potentials alphabetically
+def HelionModelNumber():
+	return [ "Pang" ]
+
 # Pang is the potential used for 3He
 def Pang(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	# CHECK VALUE OF H

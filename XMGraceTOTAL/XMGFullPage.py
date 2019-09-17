@@ -18,7 +18,9 @@ import numpy as np
 #	02	Red			06	Brown		10	Magenta		14	Turquoise
 #	03	Green		07	Grey		11	Orange		15	Green4
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-allowedColours = [1,11,2,6,15,4,8,14]
+# MATCHES TO DIFFERENT L's UP TO 6, 7 is 2-3, 8 is 2-5, and 9 is unassigned
+#                 [ 0,  1, 2, 3,  4, 5, 6,2-3,2-5, U ]
+allowed_colours = [ 1, 11, 2, 6, 15, 4, 8, 13, 10, 0 ]
 printNumOnGraph = 1
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -51,6 +53,15 @@ def ConvertL( string ):
 	temp_string = string.lstrip("[").rstrip("]")
 	temp_list = temp_string.split("_")
 	for i in range( 0, len(temp_list) ):
+		if "%" in temp_list[i]:
+			if temp_list[i] == "2%3":
+				temp_list[i] = 7
+			elif temp_list[i] == "2%5":
+				temp_list[i] = 8
+			else:
+				temp_list[i] = 0
+		if temp_list[i] == "":
+				temp_list[i] = 9
 		temp_list[i] = int(temp_list[i])
 	return temp_list
 
@@ -69,10 +80,10 @@ energy = inFileDir[len(inFileDir)-10:len(inFileDir)-4]
 w = int(sys.argv[4])
 v = int(sys.argv[5])
 MAX = sys.argv[6]
+logy = int(sys.argv[7])
 
 # Isolate which number it is
 tempString = outFileDir.split("/")[-1]
-print(tempString)
 fileNum = ""
 for i in range(0,len(tempString)):
 	if tempString[i].isdigit():
@@ -126,16 +137,18 @@ if type(v) != int or v == -1:
 
 # Find the maximum value for every file
 max_value = []
+min_value = []
 angle_min = 5
 angle_max = 10
 
-# Find the maximum value from experimental file
+# Find the maximum and minimum value from experimental file
 for i in range(0,int(len(fileDirs)/2)):
 	# Open the correct file
 	find_ex_max_file = open(fileDirs[ReturnMaxIndex( "ex", i ) ])
 
 	# Define the current maximum
 	current_max = 0
+	current_min = 10
 
 	# Find a bigger maximum
 	for line in find_ex_max_file:
@@ -144,11 +157,18 @@ for i in range(0,int(len(fileDirs)/2)):
 		if len( temp_list ) > 1:
 			temp_num = float(temp_list[1])
 			if len( temp_list ) > 2:
-				temp_num += float(temp_list[2])
+				temp_num_max = temp_num + float(temp_list[2])
+				temp_num_min = temp_num - float(temp_list[2])
 			
 			try:
-				if temp_num > current_max:
-					current_max = temp_num
+				if temp_num_max > current_max:
+					current_max = temp_num_max
+			except:
+				pass
+
+			try:
+				if temp_num_min < current_min:
+					current_min = temp_num_min
 			except:
 				pass
 
@@ -183,11 +203,21 @@ for i in range(0,int(len(fileDirs)/2)):
 				except:
 					pass
 
+				try:
+					if temp_num < current_min:
+						current_min = temp_num
+				except:
+					pass
+
 	# Close the Ptolemy file
 	find_pt_max_file.close()
 
 	# Now append the maximum value
 	max_value.append(current_max)
+	min_value.append(current_min)
+
+# FORCE SETTINGS
+angle_max =  50
 
 ##### MAKE THE BATCH FILE
 # First prepare parameters to go into file
@@ -223,6 +253,8 @@ outFile.write("ARRANGE(" + str(v) + "," + str(w) + "," + str(offset) + ",0.35,0.
 for i in range(0,count):
 	# Focus on graph
 	outFile.write("FOCUS G" + str(i) + "\n")
+	if logy == 1:
+		outFile.write("G" + str(i) + " TYPE LOGY\n")
 	
 	# Find out number of LStates
 	try:
@@ -244,7 +276,7 @@ S0 SYMBOL FILL 1
 	# PTOLEMY - will differ depending if there are two L states
 	outFile.write("READ XY \"" + fileDirs[2*i+1] + "\"\n")
 	for j in range(0, len(L[i])):
-		outFile.write("S" + str(j+1) + " LINE COLOR " + str( allowedColours[ L[i][j] ] ) + "\n")
+		outFile.write("S" + str(j+1) + " LINE COLOR " + str( allowed_colours[ L[i][j] ] ) + "\n")
 		outFile.write("S" + str(j+1) + " LINEWIDTH " + lineWidth + "\n")
 
 	# GLOBAL
@@ -252,9 +284,9 @@ S0 SYMBOL FILL 1
 	height_of_box = 1.3*float( max_value[i] )
 
 	# x-axis ticks
-	outFile.write('''XAXIS TICK MAJOR 20
+	outFile.write('''XAXIS TICK MAJOR 10
 XAXIS TICK MAJOR SIZE 0.4
-XAXIS TICK MINOR 10
+XAXIS TICK MINOR 5
 XAXIS TICK MINOR SIZE 0.2
 XAXIS TICKLABEL FONT 4
 ''')
@@ -264,11 +296,58 @@ XAXIS TICKLABEL FONT 4
 	outFile.write("YAXIS TICKLABEL FONT 4\n")
 	outFile.write("YAXIS TICKLABEL CHAR SIZE " + fontSize + "\n")
 
-	# Calcuate where y-axis ticks should go
+	# Calcuate where y-axis ticks should go based on the maximum value
 	outFile.write("YAXIS TICK MAJOR SIZE 0.4\n")
 	outFile.write("YAXIS TICK MINOR SIZE 0.2\n")
-	outFile.write("YAXIS TICK DEFAULT 10\n")
+
+	# CALCULATE TICK SPACING FOR LIN/LOG SCALE ON Y AXIS AND MAXIMUM Y
+	if logy == 1:
+		outFile.write("YAXIS TICK MAJOR 10\n")
+		outFile.write("YAXIS TICK MINOR TICKS 9\n")
 		
+		# Calculate the maximum and minimum y's based on max and min values
+		y_max = 1.3*float( max_value[i] )
+		y_min = float( min_value[i] )/1.3
+		
+		y_max_log = ( np.ceil( y_max/( 10**np.floor( np.log10(y_max) ) ) ) + 0.5 )*10**np.floor( np.log10(y_max) )
+		
+		if ( 10**( np.mod( np.log10( y_min ), 1 ) ) ) <= 5.0:
+			y_min_log = 10**( np.floor( np.log10( y_min ) ) )
+		else:
+			y_min_log = 10**( np.floor( np.log10( y_min ) ) + np.log10(5) )
+
+	else:
+		# Calculate order of magnitude
+		exponent = np.floor( np.log10( height_of_box ) )
+
+		# Calculate the normalised size between zero and 1
+		rem_1 = np.round( height_of_box/( 10**exponent ) )
+
+		y_major_tick = 10
+		if rem_1 == 1:
+			y_major_tick = 0.2
+		elif rem_1 == 2:
+			y_major_tick = 0.4
+		elif rem_1 == 3:
+			y_major_tick = 0.5
+		elif rem_1 == 4:
+			y_major_tick = 0.5
+		elif rem_1 == 5:
+			y_major_tick = 1
+		elif rem_1 == 6:
+			y_major_tick = 1
+		elif rem_1 == 7:
+			y_major_tick = 1
+		elif rem_1 == 8:
+			y_major_tick = 2
+		elif rem_1 == 9:
+			y_major_tick = 2
+
+		
+		outFile.write("# y_major_tick = " + str(y_major_tick) + ", exponent = " + str(exponent) + "\n" )
+		outFile.write("YAXIS TICK MAJOR " + str(y_major_tick*(10**exponent)) + "\n")
+		outFile.write("YAXIS TICK MINOR " + str(y_major_tick*(10**exponent)/2) + "\n#")
+
 	# BASE FOR ENERGY STRING
 	outFile.write("READ XY \"" + baseFileDir + "\"\n")
 	outFile.write("S" + str(len(L[i]) + 1) + " LINESTYLE 0\n")
@@ -282,7 +361,12 @@ STRING JUST 9
 ''')
 	outFile.write("STRING CHAR SIZE " + fontSize + "\n")
 	outFile.write("STRING G" + str(i) + "\n")
-	outFile.write("STRING " + str(angle_max - 5) + ", " + str(1.2*float(max_value[i])) + "\n")
+	if logy == 1:
+		outFile.write("STRING " + str(angle_max - 5) + ", " + str(10**( 0.923*np.log10( y_max_log ) ) ) + "\n")
+	else:
+		outFile.write("STRING " + str(angle_max - 5) + ", " + str( 0.923*height_of_box ) + "\n")
+		
+		
 	if printNumOnGraph == 1:
 		outFile.write("STRING DEF \"" + "(" + str(w*v*(numFile-1) + i + 1) + ") " + str(energy[i]) + "\"\n")
 	else:
@@ -300,11 +384,22 @@ STRING JUST 9
 		''')
 		outFile.write("STRING CHAR SIZE 0.450\n")
 		outFile.write("STRING G" + str(i) + "\n")
-		outFile.write("STRING 45, " + str(1.35*float(max_value[i])) + "\n")
+		if logy == 1:
+			outFile.write("STRING " + str( 0.5*( angle_min + angle_max ) ) + ", " + str(10**( 1.05*np.log10( y_max_log ) ) ) + "\n")
+		else:
+			outFile.write("STRING " + str( 0.5*( angle_min + angle_max ) ) + ", " + str(1.05*height_of_box) + "\n")
 		outFile.write("STRING DEF \"" + model_name[i] + "\"\n" )
 
-	# Define the world coordinates
-	outFile.write("WORLD 0, " + str(angle_min) + ", " + str(angle_max) + ", " + str(height_of_box) + "\n")
+	
+
+	# DEFINE WORLD COORDINATES
+	if logy == 1:
+		# LOGY SCALE
+		outFile.write("WORLD " + str(angle_min) + ", " + str(y_min_log) + ", " + str(angle_max) + ", " + str(y_max_log) + "\n")
+
+	else:
+		# LINEAR SCALE
+		outFile.write("WORLD " + str(angle_min) + ", 0, " + str(angle_max) + ", " + str(height_of_box) + "\n")
 
 	# Calculate if there are any states to kill
 	if (w*v) - count > 0:

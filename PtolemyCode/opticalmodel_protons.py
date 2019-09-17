@@ -11,16 +11,16 @@ import numpy as np
 
 # Define optical model dictionary
 proton_dct = {
-	"BG": [0,1],
-	"KD": [1,2],
-	"M":  [2,3],
-	"P":  [3,4],
-	"V":  [4,5],
-	"len":    5,
-	"ALL_P": [0,5]
+	"BG":    [0,1],
+	"KD":    [1,2],
+	"M":     [2,3],
+	"P":     [3,4],
+	"V":     [4,5],
+	"len":       5,
+	"ALL-P": [0,5]
 }
 
-# Return the names of the deuteron potentials alphabetically
+# Return the names of the proton potentials alphabetically
 def ProtonModelNumber():
 	return [ "BecchettiGreenlees", "KoningDelaroche", "Menet", "Perey", "Varner" ]
 
@@ -202,15 +202,15 @@ def Varner(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 
 	# CALCULATE TRIVIAL PARAMETERS
 	[N, Q, E] = CalcTrivials(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H)
-	
+
 	# Calculate final parameters
 	rc1 = 1.24*(A**(1.0/3.0) ) + 0.12
 	ec = 1.73*Z/rc1
 	eta =  float(N - Z)/float(A) 
 
-	v = 52.9 + (13.1*(N - Z)/A ) + ( -0.299*( E - ec) )
+	v = 52.9 + (13.1*float(N - Z)/float(A) ) + ( -0.299*( E - ec) )
 	vi = 7.8/( 1 + np.exp( ( 35 - ( E - ec ) )/16.0 ) )
-	vsi = ( 10 + ( 18.0*(N - Z)/A ) )/( 1 + np.exp( ( E - ec - 36.0 )/37.0 ) )
+	vsi = ( 10 + ( 18.0*float(N - Z)/float(A) ) )/( 1 + np.exp( ( E - ec - 36.0 )/37.0 ) )
 	vso = 5.9
 	vsoi = 0.0
 	

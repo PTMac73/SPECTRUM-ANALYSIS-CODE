@@ -40,6 +40,7 @@ def CreateLString(L):
 		L_string += str(L) + "]"
 	return L_string
 
+# CSV FILE HAS FORMAT e.g. 28Mg-(d,p)-MOREINFORMATION.csv
 def GetDetailsFromCSV( CSV_file_name ):
 	detail_list = CSV_file_name.split("-")
 	isotope = detail_list[0]
@@ -48,10 +49,10 @@ def GetDetailsFromCSV( CSV_file_name ):
 
 def CreateDATFileName( model, energy, L, L_column, ExorPT, CSV_file_name ):
 	# Get details from CSV file name
-	if model != "NA":
+	if model == "":
 		model = "NA"
 	isotope, reaction = GetDetailsFromCSV( CSV_file_name )
-	file_name = isotope + "-" + ExorPT + "-["  + model + "]-" + str(energy) + "-" + CreateLString( GetColumn(L, L_column ) ) + ".dat"
+	file_name = isotope + "-" + reaction + "-" + ExorPT + "-["  + model + "]-" + str(energy) + "-" + CreateLString( GetColumn(L, L_column ) ) + ".dat"
 	return file_name
 
 
@@ -143,7 +144,10 @@ for i in range(0, len(data)):
 		# Store L's in row 1
 		if i == 1 and j > 1:
 			if data[i][j] != "" and data[i][j] != "U":
-				L[0][j-2] = int(data[i][j])
+				if "%" in data[i][j]:
+					L[0][j-2] = data[i][j]
+				else:
+					L[0][j-2] = int(data[i][j])
 			else:
 				L[0][j-2] = -1
 

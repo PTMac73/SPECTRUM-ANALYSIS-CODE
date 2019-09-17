@@ -224,10 +224,8 @@ def ModelNames( reaction_type ):
 	# Returns the names of the two model potentials combined
 	p = ProtonModelNumber()
 	d = DeuteronModelNumber()
-
-	# TODO - WRITE THESE THINGS
-	h = []
-	a = []
+	h = HelionModelNumber()
+	a = AlphaModelNumber()
 	name_list = []
 
 	# Select the right potentials
@@ -280,6 +278,10 @@ def GetModelNumberList( reaction_type, optical_model_in, optical_model_out ):
 		dct_1 = deuteron_dct
 		dct_2 = deuteron_dct
 		flag_elastic = 1
+		
+	elif reaction_type == "ha":
+		dct_1 = helion_dct
+		dct_2 = alpha_dct
 	
 	else:
 		raise ValueError("Not an allowed reaction type.")

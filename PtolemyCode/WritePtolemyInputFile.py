@@ -22,6 +22,7 @@ from function_GenerateLValues import *
 from function_PtolemyParameters import *
 from function_ImportEnergies import *
 from function_GetOptions import *
+from opticalmodel_globals import CalcQ
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ GET THE FILE DIRECTORIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Get the file directories
@@ -42,13 +43,21 @@ opt_dct = GetOptions(optionFileDir)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CALCULATE RELEVANT QUANTITIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Import Energies
-energy = importEnergy(PARAMETERFileDir + "energyList.txt")
+energy = importEnergy(PARAMETERFileDir + "/energyList.txt")
 
-# Generate L Values
+# Generate L Values for RESIDUAL NUCLEUS (N.B. only works for neutron transfer at the moment)
+if opt_dct["D"] == 0:
+	residual_A = opt_dct["A"] - 1
+elif opt_dct["D"] == 1:
+	residual_A = opt_dct["A"] + 1
+
 if opt_dct["L"] == -2:
-	L, J, JP, node = GenerateSpinParity( opt_dct["A"] - opt_dct["Z"], opt_dct["Z"], opt_dct["D"] )
+	L, J, JP, node = GenerateSpinParity( residual_A - opt_dct["Z"] , opt_dct["Z"], opt_dct["D"] )
 else:
-	L, J, JP, node = GetNodes( opt_dct["Z"], opt_dct["A"] - opt_dct["Z"], opt_dct["D"], opt_dct["L"] )
+	L, J, JP, node = GetNodes( opt_dct["Z"], residual_A - opt_dct["Z"], opt_dct["D"], opt_dct["L"] )
+
+# Calculate Q value for reaction
+Q = CalcQ( opt_dct["M_Target"], opt_dct["M_Projectile"], opt_dct["M_Ejectile"], opt_dct["M_Product"] )
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAKE THE PTOLEMY FILE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -66,10 +75,10 @@ for i in range(0,len(energy)):
 		for j in range(0,len(J)):
 			if j == len(J) - 1:
 				# Last block, so need to write end of the file as well
-				WritePtolemyBlock( inFile, JP[j], L[j], node[j], energy[i], s[a], opt_dct, 1 )
+				WritePtolemyBlock( inFile, JP[j], L[j], node[j], energy[i], s[a], opt_dct, Q, 1 )
 			else:
 				# Write a normal block if not the last block
-				WritePtolemyBlock( inFile, JP[j], L[j], node[j], energy[i], s[a], opt_dct, 0 )
+				WritePtolemyBlock( inFile, JP[j], L[j], node[j], energy[i], s[a], opt_dct, Q, 0 )
 
 		# Close the file
 		inFile.close()

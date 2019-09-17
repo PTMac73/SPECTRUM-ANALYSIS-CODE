@@ -7,8 +7,8 @@
 # The University of Manchester
 # =============================================================================================== #
 # GENERATE PREFIX
-PREFIX=`date +%Y∙%V_%d%b%y-`
-FIGURE_DIR="/home/ptmac/Documents/Notebooks/Digital-Lab-Book/Figures"
+PREFIX=`date +%Y-%m-%d_`
+FIGURE_DIR="/home/ptmac/Documents/Notebooks/Digital-Lab-Book/figures"
 
 # RENAME FILES
 for f in $@

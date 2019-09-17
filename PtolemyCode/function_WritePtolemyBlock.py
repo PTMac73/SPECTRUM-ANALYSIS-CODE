@@ -22,23 +22,23 @@
 # =============================================================================================== #
 
 # Define a function to write a block of Ptolemy code
-def WritePtolemyBlock( inFile, jp, L, node, energy, s, opt_dct, last ):
+def WritePtolemyBlock( inFile, jp, L, node, energy, s, opt_dct, Q, last ):
 	# Choose Ptolemy block to write based on whether it is elastic scattering or not
 	if opt_dct["reaction_type"] == "dd":
 		WritePtolemyBlockElastic( inFile, jp, L, node, energy, s, opt_dct, last )
 	else:
-		WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, last )
+		WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, Q, last )
 
 	return
 
 
-def WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, last ):
+def WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, Q, last ):
 	# Write all the necessary lines to the file
 	inFile.write('''reset
 r0target
 print 0
 ''')
-	inFile.write("REACTION: " + opt_dct["reaction_full_name"] + "(" + jp + " " + str(energy) + ") ELAB=" + str(opt_dct["ELAB"]))
+	inFile.write("REACTION: " + opt_dct["reaction_full_name"] + "(" + jp + " " + str(energy) + ") ELAB=" + str(opt_dct["ELAB"]) + " Q=" + str( round( Q, 3 ) ) )
 	inFile.write('''
 PARAMETERSET dpsb labangles r0target lstep=1 lmin=0 lmax=30 maxlextrap=0
 PROJECTILE
