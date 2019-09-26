@@ -40,7 +40,7 @@ print 0
 ''')
 	inFile.write("REACTION: " + opt_dct["reaction_full_name"] + "(" + jp + " " + str(energy) + ") ELAB=" + str(opt_dct["ELAB"]) + " Q=" + str( round( Q, 3 ) ) )
 	inFile.write('''
-PARAMETERSET dpsb labangles r0target lstep=1 lmin=0 lmax=30 maxlextrap=0
+PARAMETERSET dpsb labangles r0target lstep=1 maxlextrap=0
 PROJECTILE
 NODES = 0
 R = 1   A = 0.5   WAVEFUNCTION = av18   L = 0

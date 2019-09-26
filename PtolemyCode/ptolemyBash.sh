@@ -136,7 +136,7 @@ then
 	delete_file_type .out-clean "${OUTPUT_FILE_DIR}"
 fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE FILES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-# Run ptolemyMaster.py -> writes input file
+# Run WritePtolemyInputFile.py -> writes input file
 if [ $SWITCH_WRITE_INPUT == 1 ]
 then
 	python2 "${PTOLEMY_ANALYSIS_DIR}WritePtolemyInputFile.py" "${PTOLEMY_OPTION_FILE}"
