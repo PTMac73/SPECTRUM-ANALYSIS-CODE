@@ -19,8 +19,8 @@ import numpy as np
 #	03	Green		07	Grey		11	Orange		15	Green4
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # MATCHES TO DIFFERENT L's UP TO 6, 7 is 2-3, 8 is 2-5, and 9 is unassigned
-#                 [ 0,  1, 2, 3,  4, 5, 6,2-3,2-5, U ]
-allowed_colours = [ 1, 11, 2, 6, 15, 4, 8, 13, 10, 0 ]
+#                 [ 0,  1, 2, 3,  4, 5, 6,2-3,2-5, U, DOUBLET ]
+allowed_colours = [ 1, 11, 2, 6, 15, 4, 8, 13, 10, 0, 12      ]
 printNumOnGraph = 1
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
