@@ -13,6 +13,10 @@
 # To execute the script, you must include the global variables file
 # ./ptolemyBash.sh "~/Documents/03. Munich Data Analysis (Feb 2018)/Ptolemy Input Files (124Te)/globalVariables.sh" for example
 # =============================================================================================== #
+# COLOURS
+C_DEFAULT="\e[m"
+C_RED="\e[1;31m"
+
 # SWITCHES
 SWITCH_DELETE_FILE=1
 SWITCH_WRITE_INPUT=1
@@ -89,7 +93,7 @@ else
 fi
 
 FOLDER_LENGTH="${#INPUT_FILE_DIR}"
-clear
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Deletes all the files in a given folder (if they exist) and outputs a
 # message to the console
@@ -170,7 +174,17 @@ then
 	for OUTFILE in "${OUTPUT_FILE_DIR}/"*.out; do
 		# Run ptclean script
 		python2 "${PTOLEMY_ANALYSIS_DIR}"ptclean.py "${OUTFILE}"
-		echo "Clean file ${OUTFILE##/home*/}-clean created"
+		CLEAN_FILE="${OUTFILE}-clean"
+		
+		# Check the file size to see if there were errors
+		FILE_SIZE=$( du "${CLEAN_FILE}" | cut -f 1 )
+		if [ $FILE_SIZE != 0 ]
+		then
+			echo "Clean file ${CLEAN_FILE##/home*/} created"
+		else
+			echo -e "${C_RED}${CLEAN_FILE##/home*/} is empty!! \u2192 STOP${C_DEFAULT}"
+			exit 1
+		fi
 	done
 fi
 

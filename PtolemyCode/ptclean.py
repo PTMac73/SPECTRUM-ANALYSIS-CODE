@@ -7,6 +7,7 @@
 # =============================================================================================== #
 import string
 import sys
+from datetime import *
 
 # Define a function to test if something is a float or not
 # Return 1 if successful, and 0 if it fails
@@ -24,6 +25,9 @@ infile = open(sys.argv[1])
 
 # Open an output file for cleaning
 outfile = open(sys.argv[1]+'-clean','w')
+
+# Open a logfile for storing issues with asymptopia
+logfile = open("logfile.log", 'a')
 
 # Declare some flags 
 asymptopia_flag = 0
@@ -101,10 +105,14 @@ print("")
 # Print warnings if detected
 if asymptopia_flag == 1:
 	print("\033[1;36mAsymptopia probably incorrect in " + fileName[len(fileName)-1] + "\033[0m")
+	
+	# Record in log file
+	logfile.write( datetime.now().strftime("%F %X") + ".....Asymptopia.............." + fileName[len(fileName)-1] + "\n" )
 
 if warning_flag == 1:
 	print("\033[1;33mWarning detected in " + fileName[len(fileName)-1] + "\033[0m")
 
-# Close both of the files
+# Close all of the files
 infile.close()
 outfile.close()
+logfile.close()

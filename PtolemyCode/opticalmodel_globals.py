@@ -35,6 +35,24 @@ def CalcQ( M_Target, M_Projectile, M_Ejectile, M_Product ):
 	return ( (M_Target + M_Projectile) - (M_Ejectile + M_Product) )*amu
 
 # ----------------------------------------------------------------------------------------------- #
+# Calculate separation energy for neutron or proton
+def CalcSepEn( M_Light, M_Heavy, reaction_type ):
+	# Neutron separation energy
+	if reaction_type in [ "dp", "pd", "ha", "ah" ]:
+		return 939.5654133 + amu*(M_Light - M_Heavy)
+
+	# Proton separation energy
+	elif reaction_type in [ "th", "ht", "at", "ta" ]:
+		return 938.2720813 + amu*(M_Light - M_Heavy)
+	
+	# No separation energy
+	else:
+		return -1.0
+
+		
+
+
+# ----------------------------------------------------------------------------------------------- #
 # Calculate trivial quantities
 def CalcTrivials(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	# Number of neutrons

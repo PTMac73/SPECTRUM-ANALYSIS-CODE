@@ -75,6 +75,11 @@ then
 			if [ -e "${1}" ]
 			then
 				"${PTOLEMY_SCRIPT_DIR}/"ptolemyBash.sh "${1}"
+				# Test to see if it worked OK
+				if [ $? != 0 ]
+				then
+					exit 1
+				fi
 			else
 				usage
 				exit 1

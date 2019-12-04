@@ -22,29 +22,38 @@
 # =============================================================================================== #
 
 # Define a function to write a block of Ptolemy code
-def WritePtolemyBlock( inFile, jp, L, node, energy, s, opt_dct, Q, last ):
+def WritePtolemyBlock( inFile, jp, L, node, energy, s, opt_dct, Q, sep_en, last ):
 	# Choose Ptolemy block to write based on whether it is elastic scattering or not
 	if opt_dct["reaction_type"] == "dd":
 		WritePtolemyBlockElastic( inFile, jp, L, node, energy, s, opt_dct, last )
 	else:
-		WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, Q, last )
+		WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, Q, sep_en, last )
 
 	return
 
 
-def WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, Q, last ):
+def WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, Q, sep_en, last ):
 	# Write all the necessary lines to the file
 	inFile.write('''reset
 r0target
 print 0
 ''')
-	inFile.write("REACTION: " + opt_dct["reaction_full_name"] + "(" + jp + " " + str(energy) + ") ELAB=" + str(opt_dct["ELAB"]) + " Q=" + str( round( Q, 3 ) ) )
+	# Work out whether state is unbound and write appropriate line
+	Q_str = ""
+	if energy > sep_en:
+		Q_str = " Q=-0.01"
+
+	inFile.write("REACTION: " + opt_dct["reaction_full_name"] + "(" + jp + " " + str(energy) + ") ELAB=" + str(opt_dct["ELAB"]) + Q_str )
+
+	# Continue writing
 	inFile.write('''
-PARAMETERSET dpsb labangles r0target lstep=1 maxlextrap=0
+PARAMETERSET dpsb labangles r0target lstep=1 lmin=0 lmax=30 maxlextrap=0
 PROJECTILE
 NODES = 0
 R = 1   A = 0.5   WAVEFUNCTION = av18   L = 0
 ''')
+	
+	# Add Asymptopia if needed
 	if opt_dct["Asymptopia"] > 0:
 		inFile.write("ASYMPTOPIA=" + str(opt_dct["Asymptopia"]) + "\n")
 	inFile.write(''';

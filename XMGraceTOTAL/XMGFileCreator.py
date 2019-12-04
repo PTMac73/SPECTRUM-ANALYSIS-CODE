@@ -89,20 +89,21 @@ for i in range(0, len(data)):
 		numStates = len(data[i]) - 2
 	
 	# Get number of experimental angles - 3 lines for model, L and E, and then a blank line. Then Ex stuff starts
-	spaceCounter = 0
+	gap_ctr = 0
 	if i > 3 and ExFlag == 0:
 		ExCounter += 1
 		
 		for j in range(0, len(data[i])):
 			if data[i][j] == "":
-				spaceCounter += 1
-		if spaceCounter == numStates + 2:
+				gap_ctr += 1
+
+		if gap_ctr == numStates + 2:
 			ExFlag = 1
 			ExCounter -= 1
-			spaceCounter = 0
+			gap_ctr = 0
 	
 	# Get number of Ptolemy angles after blank line in between Ex and PT stuff
-	if ExFlag == 1 and spaceCounter == 0 and PTFlag == 0:
+	if ExFlag == 1 and gap_ctr == 0 and PTFlag == 0:
 		if data[i][0] != "---":
 			PTCounter += 1
 		else:
@@ -189,7 +190,10 @@ for i in range(0, len(data)):
 
 # Write the data to file
 for i in range(0, numStates):
-	if energy[i] != -1:
+	# Make sure that the state is not empty - otherwise reject it.
+	state_list = [ exCS[x][i] for x in range(0,len(exCS)) ]
+	empty_list = [ -1.0 for x in range(0,len(exCS)) ]
+	if energy[i] != -1 and state_list != empty_list:
 		outFileEx = open(baseDir + CreateDATFileName( model[i], energy[i], L, i, "Ex", fileName ), "w")
 		for j in range(0, numExAngles):
 			if (exCS[j][i] != -1 and exAngle[j][i] != -1):

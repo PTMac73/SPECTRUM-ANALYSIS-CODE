@@ -54,10 +54,11 @@ elif opt_dct["D"] == 1:
 if opt_dct["L"] == -2:
 	L, J, JP, node = GenerateSpinParity( residual_A - opt_dct["Z"] , opt_dct["Z"], opt_dct["D"] )
 else:
-	L, J, JP, node = GetNodes( opt_dct["Z"], residual_A - opt_dct["Z"], opt_dct["D"], opt_dct["L"] )
+	L, J, JP, node = GetNodes( residual_A - opt_dct["Z"], opt_dct["Z"], opt_dct["D"], opt_dct["L"] )
 
-# Calculate Q value for reaction
+# Calculate Q value and separation energy for reaction
 Q = CalcQ( opt_dct["M_Target"], opt_dct["M_Projectile"], opt_dct["M_Ejectile"], opt_dct["M_Product"] )
+sep_en = CalcSepEn( opt_dct["M_Target"], opt_dct["M_Product"], opt_dct["reaction_type"] )
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAKE THE PTOLEMY FILE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -75,10 +76,10 @@ for i in range(0,len(energy)):
 		for j in range(0,len(J)):
 			if j == len(J) - 1:
 				# Last block, so need to write end of the file as well
-				WritePtolemyBlock( inFile, JP[j], L[j], node[j], energy[i], s[a], opt_dct, Q, 1 )
+				WritePtolemyBlock( inFile, JP[j], L[j], node[j], energy[i], s[a], opt_dct, Q, sep_en, 1 )
 			else:
 				# Write a normal block if not the last block
-				WritePtolemyBlock( inFile, JP[j], L[j], node[j], energy[i], s[a], opt_dct, Q, 0 )
+				WritePtolemyBlock( inFile, JP[j], L[j], node[j], energy[i], s[a], opt_dct, Q, sep_en, 0 )
 
 		# Close the file
 		inFile.close()

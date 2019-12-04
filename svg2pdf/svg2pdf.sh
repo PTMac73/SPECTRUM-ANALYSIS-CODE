@@ -3,11 +3,11 @@
 # =============================================================================================== #
 # Patrick MacGregor
 # Nuclear Physics Research Group
-# School of Physics and Astronomy
+# Department of Physics and Astronomy
 # The University of Manchester
 # =============================================================================================== #
 # Export to pdf
 for i in $@
 do
-	inkscape --export-dpi=600 --export-pdf="${i%%.svg}.pdf" "${i}"
+	inkscape -z -D --export-dpi=600 --file="${i}" --export-pdf="PDF-${i%%.svg}.pdf" 
 done
