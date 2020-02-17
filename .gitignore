@@ -22,3 +22,5 @@ PtolemyCode/*/
 *.xlsx
 .ods
 *.15
+*.in
+*.out
