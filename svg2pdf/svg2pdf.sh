@@ -9,5 +9,6 @@
 # Export to pdf
 for i in $@
 do
-	inkscape -z -D --export-dpi=600 --file="${i}" --export-pdf="PDF-${i%%.svg}.pdf" 
+	inkscape -z -D --export-dpi=600 --file="${i}" --export-pdf="PDF-${i%%.svg}.pdf"
+	echo "Created PDF-${i%%.svg}.pdf"
 done

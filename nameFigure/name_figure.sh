@@ -8,7 +8,7 @@
 # =============================================================================================== #
 # GENERATE PREFIX
 PREFIX=`date +%Y-%m-%d_`
-FIGURE_DIR="/home/ptmac/Documents/Notebooks/Digital-Lab-Book/figures"
+FIGURE_DIR="/home/ptmac/Documents/notebooks/Digital-Lab-Book/figures"
 
 # RENAME FILES
 for f in $@
