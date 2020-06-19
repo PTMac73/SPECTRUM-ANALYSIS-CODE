@@ -228,8 +228,6 @@ def Varner(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 
 	rc0 = rc1*( A**(-1.0/3.0) )
 	
-	
-	
 	# Format final paramaters into a list of strings
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]

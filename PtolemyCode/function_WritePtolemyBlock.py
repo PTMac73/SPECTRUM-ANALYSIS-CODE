@@ -38,12 +38,14 @@ def WritePtolemyBlockTransfer( inFile, jp, L, node, energy, s, opt_dct, Q, sep_e
 r0target
 print 0
 ''')
-	# Work out whether state is unbound and write appropriate line
-	Q_str = ""
-	if energy > sep_en:
-		Q_str = " Q=-0.01"
 
-	inFile.write("REACTION: " + opt_dct["reaction_full_name"] + "(" + jp + " " + str(energy) + ") ELAB=" + str(opt_dct["ELAB"]) + Q_str )
+	# Max energy is separation energy, so will rewrite just the separation energy (less 10 keV for safety)
+	if ( energy < sep_en - 0.01 ):
+		energy_str = str(energy)
+	else:
+		energy_str = str(sep_en - 0.01);
+
+	inFile.write("REACTION: " + opt_dct["reaction_full_name"] + "(" + jp + " " + energy_str + ") ELAB=" + str(opt_dct["ELAB"]) )
 
 	# Continue writing
 	inFile.write('''

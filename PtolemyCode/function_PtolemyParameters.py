@@ -53,9 +53,9 @@ from opticalmodel_globals import *
 
 # FUNCTIONS ===================================================================================== #
 # ObtainPTList generates the input parameters for Ptolemy based on a given reaction
-def ObtainPTList( Ex, optical_model_in, optical_model_out, opt_dct ):
+def ObtainPTList( Ex, optical_model_in, optical_model_out, opt_dct, sep_en ):
 	# Change the parameters based on the reaction
-	reaction_par = [ opt_dct["A"], opt_dct["Z"], opt_dct["ELAB"], Ex, opt_dct["M_Target"], opt_dct["M_Projectile"], opt_dct["M_Ejectile"], opt_dct["M_Product"] ]
+	reaction_par = [ opt_dct["A"], opt_dct["Z"], opt_dct["ELAB"], Ex, opt_dct["M_Target"], opt_dct["M_Projectile"], opt_dct["M_Ejectile"], opt_dct["M_Product"], sep_en ]
 
 	# Define a flag if reaction is elastic
 	flag_elastic = 0
@@ -113,6 +113,10 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 	M_Projectile = reaction_par[5]
 	M_Ejectile = reaction_par[6]
 	M_Product = reaction_par[7]
+	sep_en = reaction_par[8]
+	
+	# Define which energy to use
+	use_energy = min( sep_en - 0.01, Ex )
 
 	if massDiff == 0:
 		H = 0
@@ -124,34 +128,34 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 		d_list = []
 	
 		if optical_model == "AC":
-			d_list.append( AnCai(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( AnCai(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "PP":
-			d_list.append( PereyPerey(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( PereyPerey(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "LH":
-			d_list.append( LohrHaeberli(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( LohrHaeberli(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "HSS":
-			d_list.append( HanShiShen(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( HanShiShen(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "B":
-			d_list.append( Bojowald(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( Bojowald(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "DNR":
-			d_list.append( DaehnickNR(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( DaehnickNR(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "DR":
-			d_list.append( DaehnickR(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( DaehnickR(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "ALL-D":
-			d_list.append( HanShiShen(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			d_list.append( AnCai(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			d_list.append( Bojowald(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			d_list.append( DaehnickR(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			d_list.append( DaehnickNR(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			d_list.append( LohrHaeberli(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			d_list.append( PereyPerey(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( AnCai(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( Bojowald(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( DaehnickNR(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( DaehnickR(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( HanShiShen(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( LohrHaeberli(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			d_list.append( PereyPerey(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		else:
 			raise ValueError("Not an allowed deuteron potential.")
@@ -166,26 +170,27 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 		p_list = []
 
 		if optical_model == "KD":
-			p_list.append( KoningDelaroche(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( KoningDelaroche(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "P":
-			p_list.append( Perey(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( Perey(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "M":
-			p_list.append( Menet(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( Menet(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "V":
-			p_list.append( Varner(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( Varner(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 
 		elif optical_model == "BG":
-			p_list.append( BecchettiGreenlees(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( BecchettiGreenlees(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 		
 		elif optical_model == "ALL-P":
-			p_list.append( KoningDelaroche(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			p_list.append( Varner(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			p_list.append( Menet(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			p_list.append( BecchettiGreenlees(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
-			p_list.append( Perey(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( BecchettiGreenlees(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( KoningDelaroche(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( Menet(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( Perey(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			p_list.append( Varner(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			
 			
 		else:
 			raise ValueError("Not an allowed proton potential.")
@@ -197,7 +202,7 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 	elif particle == "h":
 		h_list = []
 		if optical_model == "P":
-			h_list.append( Pang(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			h_list.append( Pang(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 		
 		else:
 			raise ValueError("Not an allowed 3He potential.")
@@ -208,7 +213,7 @@ def PotentialSelect(particle, optical_model, massDiff, reaction_par):
 	elif particle == "a":
 		a_list = []
 		if optical_model == "BP":
-			a_list.append( BassaniPicard(A + massDiff, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
+			a_list.append( BassaniPicard(A + massDiff, Z, Ebeam, use_energy, M_Target, M_Projectile, M_Ejectile, M_Product, H) )
 		
 		else:
 			raise ValueError("Not an allowed alpha potential.")

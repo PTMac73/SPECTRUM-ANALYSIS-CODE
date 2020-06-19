@@ -4,7 +4,6 @@
 # Nuclear Physics Research Group
 # School of Physics and Astronomy
 # The University of Manchester
-# LAST EDITED: 22/11/18
 # =============================================================================================== #
 # Run the script as
 #	python XMGFileCreator.py "FILE_DIR"
@@ -39,6 +38,14 @@ def CreateLString(L):
 		# L is an int
 		L_string += str(L) + "]"
 	return L_string
+	
+def IsNumber(a):
+	test_str = str(a)
+	if len(test_str) == 0:
+		return 0
+	if test_str[0] == "-":
+		test_str = test_str.replace('-','',1)
+	return test_str.replace('.','',1).isdigit()
 
 # CSV FILE HAS FORMAT e.g. 28Mg-(d,p)-MOREINFORMATION.csv
 def GetDetailsFromCSV( CSV_file_name ):
@@ -144,7 +151,8 @@ for i in range(0, len(data)):
 
 		# Store L's in row 1
 		if i == 1 and j > 1:
-			if data[i][j] != "" and data[i][j] != "U":
+			#if data[i][j] != "" and data[i][j] != "U":
+			if IsNumber( data[i][j] ):
 				if "%" in data[i][j]:
 					L[0][j-2] = data[i][j]
 				else:
@@ -154,38 +162,44 @@ for i in range(0, len(data)):
 
 		# Store remaining L's
 		if i - 1 in dash_line_location and j > 1:
-			if data[i][j] != "":
+			#if data[i][j] != "":
+			if IsNumber( data[i][j] ):
 				L[ dash_line_location.index(i-1) + 1 ][j-2] = int(data[i][j])
 
 		# Store energy (row 2)
-		if i == 2 and j > 1 and data[i][j] != "":
+		if i == 2 and j > 1 and IsNumber( data[i][j] ):#data[i][j] != "":
 			energy[j-2] = float(data[i][j])
 
 		# Store exAngle (row 4 -> 3+numExAngles)
 		if i > 3 and i < 3 + numExAngles + 1 and j > 1:
-			if data[i][j] != "":
+			if IsNumber( data[i][j] ):
+			#if data[i][j] != "" and data[i][j] != "--":
 				exAngle[i-4][j-2] = float(data[i][j])
 
 		# Store CS (row 3+numExAngles+1 -> 3+2*numExAngles)
 		if i > 3 + numExAngles and i < 3 + 2*numExAngles + 1  and j > 1:
-			if data[i][j] != "":
+			if IsNumber( data[i][j] ):
+			#if data[i][j] != "":
 				exCS[i-3-numExAngles-1][j-2] = float(data[i][j])
 
 		# Store ECS (row 3+2*numExAngles+1 -> 3+3*numExAngles)
 		if i > 3 + 2*numExAngles and i < 3 + 3*numExAngles + 1 and j > 1:
-			if data[i][j] != "":
+			if IsNumber( data[i][j] ):
+			#if data[i][j] != "":
 				exECS[i-3-2*numExAngles-1][j-2] = float(data[i][j])
 
 		# Store PTCS (row 3+3*numExAngles+2 -> end)
 		if i > 3 + 3*numExAngles + 1 and j > 1:
 			if data[i][j] == "U":
 				ptCS[num_dashed_lines][i-3-3*numExAngles-2-num_dashed_lines][j-2] = -100
-			elif data[i][j] != "" and data[i][j] != "---" and data[i][0] != "L":
+			elif IsNumber( data[i][j] ) and data[i][0] != "L":
+			#elif data[i][j] != "" and data[i][j] != "---" and data[i][0] != "L":
 				ptCS[num_dashed_lines][i-3-3*numExAngles-2-(numPTAngles+2)*num_dashed_lines][j-2] = float(data[i][j])
 
 		# Store PT Angles
 		if i > 3 + 3*numExAngles + 1 and j == 1 and num_dashed_lines == 0:
-			if data[i][j] != "":
+			if IsNumber( data[i][j] ):
+			#if data[i][j] != "":
 				ptAngle[i-3-3*numExAngles-2] = float(data[i][j])
 
 # Write the data to file
