@@ -147,26 +147,26 @@ def GenerateSpinParity(N, Z, d):
 	node = MakeList(8) # node is the number of nodes in the wavefunction = principal quantum number - 1
 	
 	# Go between min and max
-	# 000 -> 002
+	# 000 -> 002 (0s1/2)
 	L[0] = 0
 	node[0] = 0
 	
-	# 002 -> 008
+	# 002 -> 008 (0p3/2, 0p1/2)
 	J[1] = [3,1]
 	L[1] = [1,1]
 	node[1] = [0,0]
 	
-	# 008 -> 020
+	# 008 -> 020 (0d5/2, 1s1/2, 0d3/2)
 	J[2] = [5,1,3]
 	L[2] = [2,0,2]
 	node[2] = [0,1,0]
 	
-	# 020 -> 028
+	# 020 -> 028 (0f7/2)
 	J[3] = 7
 	L[3] = 3
 	node[3] = 0
 
-	# 028 -> 050
+	# 028 -> 050 (1p3/2, 0f5/2, 0p1/2, 0g9/2)
 	J[4] = [3,5,1,9]
 	L[4] = [1,3,1,4]
 	node[4] = [1,0,1,0]
