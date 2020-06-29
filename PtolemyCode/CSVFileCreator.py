@@ -4,12 +4,14 @@
 # First argument is the list of files with all the Ptolemy out-clean files
 # in it.
 # Second argument is the CSV file name
+# File name is of the form [reaction]-[model]-[energy]-[jnumber]-[jpi].out-clean
 # =============================================================================================== #
 # Patrick MacGregor
 # Nuclear Physics Research Group
 # School of Physics and Astronomy
 # The University of Manchester
 # =============================================================================================== #
+import numpy as np
 import sys
 
 # Function to find the position of the dashes in a string
@@ -19,6 +21,37 @@ def FindDashes( string ):
 		if string[i] == "-":
 			dash_index.append(i)
 	return dash_index
+	
+# Convert jpi string to something better
+# Of the form [x]2[pn], where x is an odd number
+def JPiString( string ):
+	a = string.replace("2","/2")
+	b = a.replace("p","+")
+	c = b.replace("n","-")
+	return c
+
+# Of the form [x]2[pn], where x is an odd number
+def JPi2L( jpi ):
+	# split the string
+	j,pi = jpi.split("2")
+	
+	# get the parity and calculate whether even or odd
+	if pi == "p":
+		mod = 0
+	elif pi == "n":
+		mod = 1
+	else:
+		print("ERROR. ASSUMING EVEN.")
+		mod = 0
+		
+	# calculate the L value
+	if int( 0.5*( int(j) + 1 ) ) % 2 == mod:
+		return int( 0.5*( int(j) + 1 ) )
+	elif int( 0.5*( int(j) - 1 ) ) % 2 == mod:
+		return int( 0.5*( int(j) - 1 ) )
+	else:
+		print("ERROR. j = " + j + " not working")
+		return -1
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ STORE ALL THE PTCLEANED FILES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Open the list of files
@@ -35,8 +68,40 @@ for line in in_file:
 # Close the file
 in_file.close()
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EXTRACT THE DATA FROM FILE NAMES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+# Extract numL
+Jnumbers = []
+jpi = []
+numL = 0
+
+for i in range(0, len(clean_array) ):
+	temp_str = clean_array[i].split("/")[-1]
+	split_file_name = temp_str.split("-")
+	
+	if ( Jnumbers == [] or int(Jnumbers[numL-1]) < int(split_file_name[3]) ):
+		Jnumbers.append( split_file_name[3] )
+		jpi.append( split_file_name[4].split(".")[0] )
+
+numL = len(Jnumbers)
+
+# Extract energies, models, and jpi's too
+energy = []
+model_name = []
+
+temp_index = 0
+
+for i in range(0, len(clean_array) ):
+	temp_str = clean_array[i].split("/")[-1]
+	split_file_name = temp_str.split("-")
+	
+	# Store things that change per state
+	if ( split_file_name[3] == Jnumbers[0] ):
+		model_name.append( split_file_name[1] )
+		energy.append( float( split_file_name[2] ) )
+		temp_index += 1
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EXTRACT THE DATA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-###### Calculate the number of L-values
 # Open the first file
 first_file = open(clean_array[0])
 first_data = []
@@ -48,67 +113,43 @@ for i in first_file:
 # Close the file
 first_file.close()
 
-# Number of L-values = Number of "" in the data
-numL = 0 	# There is a space after every block
-block_size = 0
-for i in range(0,len(first_data)):
-	if first_data[i] == "":
-		# If it's the end of the first block, store how many lines it took to get there
-		if numL == 0:
-			block_size = i
-		numL += 1
-
 ###### Grab the angles
 angle = []
-for i in range(0,block_size):
-	angle.append(float(first_data[i].split()[0]))
+for i in range(0, len(first_data) ):
+	try:
+		angle.append( float( first_data[i].split()[0] ) )
+	except:
+		pass
 
 ##### Grab the theoretical cross-sections
-# Declare containers
-energy = [ 0.0 for i in range( len(clean_array) ) ]
-model_name = [ "" for i in range( len(clean_array) ) ]
-
-# First index specifies L
+# First index specifies jpi
 # Second index specifies energy
 # Third angle specifies angle
 CS = [ [ [ 0.0 for i in range(len(angle)) ] for j in range(len(energy)) ] for k in range(numL) ]
 
+
 # Loop over the number of clean files (effectively energy)
+L_index = 0
+energy_index = 0
 for i in range(0,len(clean_array)):
-	# File name format: [DIR]/[REACTION]-[IN POTENTIAL]_[OUT POTENTIAL]-[ENERGY].out-clean
-	# Grab the energy from the file name - first split at the rightmost "/"
-	tempString = clean_array[i]
-	tempString = tempString[tempString.rfind("/")+1:len(tempString)]
-	
-	# Now extract the model name and energies (between the first and second "-" characters)
-	dash_index = FindDashes( tempString )
-	model_name[i] = tempString[ dash_index[0] + 1:dash_index[1] ]
-	
-	# Now find the part between the leftmost "-" and rightmost "."
-	energy[i] = float( tempString[ dash_index[1] + 1:tempString.rfind(".")] )
-	
+	# File name format: [DIR]/[reaction]-[model]-[energy]-[jnumber]-[jpi].out-clean
 	# Open the file
 	in_file = open(clean_array[i],"r")
+	energy_index = int(np.floor(i/len(Jnumbers)))
+	L_index = i % len(Jnumbers)
 	
-	# Now define counters to reset etc.
-	L_counter = 0
-	angle_counter = 0
 
 	# Loop over lines (angle and L)
+	angle_counter = 0
 	for line in in_file:
-		# Check if it is a new L starting by empty line
-		if line.split() == []:
-			L_counter += 1
-			angle_counter = 0
-		else:
-			#print(str(line.split()[0]) + "\t" + str(angle_counter) + "\t" + str(L_counter))
-			CS[L_counter][i][angle_counter] = float(line.split()[1])
+		if len( line.split() ) > 1:
+			CS[L_index][energy_index][angle_counter] = float(line.split()[1])
 			angle_counter += 1
 	
 	# Close the file
 	in_file.close()
 
-
+#"""
 # ~~~~~~~~~~~~~~~~~~~~~~~~ CREATE CSV FILE LINES ~~~~~~~~~~~~~~~~~~~~~~~ #
 # Create the lines
 # Need [number of angular momenta]*[number of angles + blank line underneath] + 2 header lines
@@ -134,19 +175,23 @@ for i in range(0, len(model_name) ):
 for i in range(0,numL):
 	# Loop over angles + 1 (for blank line beneath) [one row]
 	for j in range(0,len(angle)+1):
-		# Loop over energy + 2 (for line of angles in second column and for L in first column) [one column]
-		for k in range(len(energy)+2):
+		# Loop over energy + 3 (for line of angles in third column and for L in second column and for jpi in first column) [one column]
+		for k in range(len(energy)+3):
 			# Append angles
-			if k == 1 and j < len(angle):
+			if k == 2 and j < len(angle):
 				CSVFileLines[i*(len(angle) + 1) + j + 2] += str(angle[j]) + ","
 
-			# Append angular momenta
+			# Append JPI
 			elif k == 0 and j == 0:
-				CSVFileLines[i*(len(angle) + 1) + j + 2] += str(i) + ","
+				CSVFileLines[i*(len(angle) + 1) + j + 2] += JPiString( jpi[i] ) + ","
+				
+			# Append L
+			elif k == 1 and j == 0:
+				CSVFileLines[i*(len(angle) + 1) + j + 2] += str( JPi2L( jpi[i] ) ) + ","
 
 			# Append actual data
-			elif j < len(angle) and k > 1:
-				CSVFileLines[i*(len(angle) + 1) + j + 2] += str( CS[i][k-2][j] ) + ","
+			elif j < len(angle) and k > 2:
+				CSVFileLines[i*(len(angle) + 1) + j + 2] += str( CS[i][k-3][j] ) + ","
 
 			# Fill the rest with blanks
 			else:
@@ -167,7 +212,7 @@ for i in range(0,len(CSVFileLines)):
 # Close the file
 outFile.close()
 
-
+#"""
 
 
 

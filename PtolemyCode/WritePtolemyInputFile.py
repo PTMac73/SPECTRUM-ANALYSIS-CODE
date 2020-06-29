@@ -43,18 +43,13 @@ opt_dct = GetOptions(optionFileDir)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CALCULATE RELEVANT QUANTITIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Import Energies
-energy = importEnergy(PARAMETERFileDir + "/energyList.txt")
+energy = ImportEnergy(PARAMETERFileDir + "/energyList.txt")
 
-# Generate L Values for RESIDUAL NUCLEUS (N.B. only works for neutron transfer at the moment)
-if opt_dct["D"] == 0:
-	residual_A = opt_dct["A"] - 1
-elif opt_dct["D"] == 1:
-	residual_A = opt_dct["A"] + 1
-
+# Generate L Values for RESIDUAL NUCLEUS
 if opt_dct["L"] == -2:
-	L, J, JP, node = GenerateSpinParity( residual_A - opt_dct["Z"] , opt_dct["Z"], opt_dct["D"] )
+	L, J, JP, node = GenerateSpinParity( opt_dct )
 else:
-	L, J, JP, node = GetNodes( residual_A - opt_dct["Z"], opt_dct["Z"], opt_dct["D"], opt_dct["L"] )
+	L, J, JP, node = GetNodes( opt_dct["A"] - opt_dct["Z"], opt_dct["Z"], opt_dct["D"], opt_dct["L"] )
 
 # Calculate Q value and separation energy for reaction
 Q = CalcQ( opt_dct["M_Target"], opt_dct["M_Projectile"], opt_dct["M_Ejectile"], opt_dct["M_Product"] )
@@ -70,7 +65,7 @@ for i in range(0,len(energy)):
 	# Now need to loop over possible models
 	for a in range(0, len(s) ):
 		# Open the file
-		inFile = open(INPUTFileDir + FileNameIN( opt_dct["reaction_name"], energy[i], name_list[omn_list[a]] ), "w" )
+		inFile = open(INPUTFileDir + "/" + FileNameIN( opt_dct["reaction_name"], energy[i], name_list[omn_list[a]] ), "w" )
 
 		# Loop over all states if J
 		for j in range(0,len(J)):

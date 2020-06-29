@@ -25,8 +25,8 @@ SWITCH_CLEAN=1
 SWITCH_CSV_ARRAY=1
 
 # FIXED DIRECTORIES
-PTOLEMY_DIR=~/Software/Ptolemy/
-PTOLEMY_ANALYSIS_DIR="/home/ptmac/Documents/SPECTRUM_ANALYSIS_CODE/PtolemyCode/"
+PTOLEMY_DIR=~/Software/Ptolemy
+PTOLEMY_ANALYSIS_DIR="/home/ptmac/Documents/SPECTRUM_ANALYSIS_CODE/PtolemyCode"
 
 # Check for help option
 usage() {
@@ -143,7 +143,7 @@ fi
 # Run WritePtolemyInputFile.py -> writes input file
 if [ $SWITCH_WRITE_INPUT == 1 ]
 then
-	python2 "${PTOLEMY_ANALYSIS_DIR}WritePtolemyInputFile.py" "${PTOLEMY_OPTION_FILE}"
+	python2 "${PTOLEMY_ANALYSIS_DIR}/WritePtolemyInputFile.py" "${PTOLEMY_OPTION_FILE}"
 fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ RUN PTOLEMY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Run ptolemy for each of the input files and store in the right folder
@@ -160,7 +160,7 @@ then
 		OUTPUT_NAME="${FILE:FOLDER_LENGTH:OUTPUT_LENGTH}.out"
 		
 		# Run Ptolemy
-		"${PTOLEMY_DIR}"ptolemy <"${FILE}">"${OUTPUT_FILE_DIR}/${OUTPUT_NAME}"
+		"${PTOLEMY_DIR}/"ptolemy <"${FILE}">"${OUTPUT_FILE_DIR}/${OUTPUT_NAME}"
 	
 		# Echo message
 		FULLFILE="${OUTPUT_FILE_DIR}/${OUTPUT_NAME}"
@@ -171,11 +171,14 @@ fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ RUN PTCLEAN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 if [ $SWITCH_CLEAN == 1 ]
 then
-	for OUTFILE in "${OUTPUT_FILE_DIR}/"*.out; do
+	for OUTFILE in "${OUTPUT_FILE_DIR}/"*.out
+	do
 		# Run ptclean script
-		python2 "${PTOLEMY_ANALYSIS_DIR}"ptclean.py "${OUTFILE}"
-		CLEAN_FILE="${OUTFILE}-clean"
+		python2 "${PTOLEMY_ANALYSIS_DIR}/"ptclean.py "${OUTFILE}"
+	done
 		
+	for CLEAN_FILE in "${OUTPUT_FILE_DIR}/"*.out-clean
+	do		
 		# Check the file size to see if there were errors
 		FILE_SIZE=$( du "${CLEAN_FILE}" | cut -f 1 )
 		if [ $FILE_SIZE != 0 ]
@@ -190,7 +193,7 @@ fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE CSV ARRAY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # First write a file list for python2 to read
-CLEAN_NAME="CleanFileList.txt"
+CLEAN_NAME="clean_file_list.txt"
 if [ $SWITCH_CSV_ARRAY == 1 ]
 then
 	# Clear the cleanFileList
@@ -209,7 +212,7 @@ then
 	
 	# Now run the python2 script to create the mahoosive CSV file
 	CSV_NAME="${OUTPUT_FILE_DIR}/PT_Raw.csv"
-	python2 "${PTOLEMY_ANALYSIS_DIR}"CSVFileCreator.py "${OUTPUT_FILE_DIR}/${CLEAN_NAME}" "${CSV_NAME}"
+	python2 "${PTOLEMY_ANALYSIS_DIR}/"CSVFileCreator.py "${OUTPUT_FILE_DIR}/${CLEAN_NAME}" "${CSV_NAME}"
 fi
 
 

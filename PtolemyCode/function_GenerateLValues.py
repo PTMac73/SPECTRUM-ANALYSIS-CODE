@@ -49,10 +49,10 @@ def MakeList(n):
 
 # FUNCTION TO RETURN THE PARITY OF A STATE GIVEN ITS ANGULAR MOMENTUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 def GetParity(L):
-	if (-1)**L == 1:
-		parity = "+"
-	if (-1)**L == -1:
+	if L % 2 == 1:
 		parity = "-"
+	if L % 2 == 0:
+		parity = "+"
 	return parity
 
 # PRINTS STATES GIVEN NODES, J AND L N.B. THESE ARE 1D LISTS! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -105,11 +105,12 @@ def JLToJP(J,L):
 	return JP
 
 # FUNCTION TO REDUCE THE NUMBER OF STATES SO THAT EACH HAS A UNIQUE VALUE OF L ~~~~~~~~~~~~~~~~~~ #
-def ReduceStates( L_full, J_full, node_full, desired_duplicate_list ):
+#def ReduceStates( L_full, J_full, node_full, desired_duplicate_list ):
+def ReduceStates( L_full, J_full, node_full, LMAX ):
 	# Find out where there are duplicate [L,node] states
 	indexArray = []
 	for i in range( 0, len(L_full) - 1 ):
-		if [ L_full[i], node_full[i] ] == [ L_full[i+1], node_full[i+1] ] and L_full[i] not in desired_duplicate_list:
+		if L_full[i] == L_full[i+1] and node_full[i] != node_full[i+1] and L_full[i] <= LMAX:
 			indexArray.append(i)
 	
 	# Now delete those duplicate elements from J, L, and node
@@ -133,13 +134,18 @@ def ReduceStates( L_full, J_full, node_full, desired_duplicate_list ):
 		
 
 # FUNCTION TO GENERATE THE VALUES OF L, JP, AND NODES FOR THE PTOLEMY INPUT FILES ~~~~~~~~~~~~~~~ #
-def GenerateSpinParity(N, Z, d):
+def GenerateSpinParity(opt_dct):
+	Z = opt_dct["Z"]
+	N = opt_dct["A"] - Z
+	d = opt_dct["D"]
+	LMAX = opt_dct["LMAX"]
+	
 	# N is the number of neutrons
 	# Z is the number of protons
 	# d is the direction (i.e. which shells to sample based on addition to or removal from residual nucleus)
 
 	# Define a list of desired duplicate L's which should not be removed
-	desired_duplicate_list = [2]
+	#desired_duplicate_list = [2]
 	
 	# 8 shell gaps - generate list of length 7 to store each list
 	L = MakeList(8) # L is the angular momentum for each of the J-states
@@ -246,6 +252,7 @@ def GenerateSpinParity(N, Z, d):
 				L_comb_n = CombineQuantities( L[k_n+1], L[k_n], L[k_n-1] )
 				J_comb_n = CombineQuantities( J[k_n+1], J[k_n], J[k_n-1] )
 				node_comb_n = CombineQuantities( node[k_n+1], node[k_n], node[k_n-1] )
+				
 
 			# Now zip together the states
 			Z_n = zip( L_comb_n, J_comb_n, node_comb_n )
@@ -256,7 +263,7 @@ def GenerateSpinParity(N, Z, d):
 			node_full_n = [ sorted(Z_n)[i][2] for i in range( 0, len(Z_n) ) ]
 
 			# Reduce the states to remove duplicates
-			L_final_n, J_final_n, JP_final_n, node_final_n = ReduceStates( L_full_n, J_full_n, node_full_n, desired_duplicate_list )
+			L_final_n, J_final_n, JP_final_n, node_final_n = ReduceStates( L_full_n, J_full_n, node_full_n, LMAX )
 
 			# Print levels
 			#PrintStates( J_final_n, L_final_n, node_final_n )
@@ -281,7 +288,7 @@ def GenerateSpinParity(N, Z, d):
 			node_full_p = [ sorted(Z_p)[i][2] for i in range( 0, len(Z_p) ) ]
 
 			# Reduce the states to remove duplicates
-			L_final_p, J_final_p, JP_final_p, node_final_p = ReduceStates( L_full_p, J_full_p, node_full_p, desired_duplicate_list )
+			L_final_p, J_final_p, JP_final_p, node_final_p = ReduceStates( L_full_p, J_full_p, node_full_p, LMAX )
 
 			# Print levels
 			#PrintStates( J_final_p, L_final_p, node_final_p )

@@ -18,13 +18,63 @@ def isfloat(str):
 	except ValueError:
 		ret = 0
 	return ret
+	
+def JPiNumber(jpi):
+	# jpi of form "x/2+" or "x/2-" where x is an integer
+	if  jpi[-1] == "+":
+		pi = 1
+	elif jpi[-1] == "-":
+		pi = -1
+	else:
+		print( jpi + " is not a valid JPI string" )
+		exit(1)
+	
+	j = int( jpi.split("/")[0] ) # This gives 1 for 1/2+
+	
+	# Carry out complicated operation to assign ordering
+	fac = int( -0.5*( ( ( j % 4 ) + pi ) % 4 ) )
+	ret = "%02d" % ( j + fac )
+	#print( "\t".join([ jpi, str(j%4 + pi), str(pi), str(fac),ret] ) )
+	return ret
+	
+	
+def GetSpinParity(s):
+	# String resembles something like "028Mg(d,p)29Mg(3/2+ 0.0) "
+	# Split at bracket
+	t = s.split("(")
+	
+	for i in range( 0, len(t) ):
+		if "/2+" in t[i]:
+			return str( JPiNumber(t[i]) ) + "-" + t[i].replace("+","p").replace("/","")
+		if "/2-" in t[i]:
+			return str( JPiNumber(t[i]) ) + "-" + t[i].replace("-","n").replace("/","")
+	print("Could not find spin parity in " + s + ".")
+	exit(1)
+	
+	
+def CleanFileName(s, sp):
+	# Split at .
+	t = s.split(".")
+	
+	# Should be [ PRE + Estart, Eend, suffix ] 
+	u = ""
+	
+	for i in range(0,len(t)):
+		u += t[i]
+		
+		if i == len(t) - 2:
+			u += "-" + sp + "."
+		elif i < len(t) - 2:
+			u += "."
+			
+	u += "-clean"
+	return str(u)
+	
+	
 
 # MAIN FUNCTION
 # Input file is the first argument - store it
 infile = open(sys.argv[1])
-
-# Open an output file for cleaning
-outfile = open(sys.argv[1]+'-clean','w')
 
 # Open a logfile for storing issues with asymptopia
 logfile = open("logfile.log", 'a')
@@ -37,21 +87,35 @@ elastic_flag = 0
 # Loop over the lines in the file
 while True:
 	# Store the line
-	line=infile.readline()
+	line = infile.readline()
 	
 	# If the line is empty - end of file, so break the while loop
 	if (line==''):					
 		break
 	
 	# Split the line at the spaces into different components
-	words=string.split(line)
+	words = string.split(line)
+	
+	# Get the spin-parity
+	if ( len(words) > 1 and words[0] == "0INPUT..." and words[1] == "REACTION:" ):
+		sp = GetSpinParity( words[2] )
+			
+		# Open an output file for cleaning
+		filename = CleanFileName( sys.argv[1], sp )
+		outfile = open( filename,'w+')
 	
 	# STORE THE DATA
 	# Inelastic
 	if ( len(words) > 1 and words[0] == "ANGLE" and elastic_flag == 0 ):	#look for lines starting with 'ANGLE'
+	
+		# Check the file is open for writing
+		if outfile.closed:
+			print("ERROR. FILE NOT OPEN!")
+			exit(1)
 		
 		# Entered a region where there are useful numbers - deal with them in a new loop
 		while True:
+		
 			# Get the next line and split it
 			temp = string.split( infile.readline() )
 			
@@ -64,6 +128,11 @@ while True:
 			# Test if the line has length > 8 and the first two fields are numbers
 			elif ( len(temp) > 8 and isfloat( temp[0] ) and isfloat( temp[1] ) ):
 				outfile.write(temp[0] + ' ' + temp[1] + '\n')
+				
+				
+				
+				
+				
 
 	# Elastic
 	elif ( len(words) > 1 and words[0] == "0" and words[1] == "ANGLE" and elastic_flag == 1 ):

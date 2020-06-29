@@ -6,7 +6,7 @@
 # School of Physics and Astronomy
 # The University of Manchester
 # =============================================================================================== #
-def importEnergy(inFileDir):
+def ImportEnergy(inFileDir):
 	inFile = open(inFileDir)
 	energy = []
 	for line in inFile:
