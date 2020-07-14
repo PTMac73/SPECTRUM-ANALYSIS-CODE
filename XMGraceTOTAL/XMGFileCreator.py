@@ -39,6 +39,29 @@ def CreateLString(L):
 		L_string += str(L) + "]"
 	return L_string
 	
+def JPiToL(jpi):
+	# jpi of form "x/2+" or "x/2-" where x is an integer
+	
+	# calculate parity that is mod 2 when applied to the l-value
+	if  jpi[-1] == "+":
+		pi = 0
+	elif jpi[-1] == "-":
+		pi = 1
+	else:
+		return "--"
+	
+	j = float( jpi.split("/")[0] ) # This gives 1 for 1/2+
+	
+	# Work out the l-value
+	if ( j/2 - 0.5 ) % 2 == pi:
+		return int(j/2 - 0.5)
+	elif ( j/2 + 0.5 ) % 2 == pi:
+		return int(j/2 + 0.5)
+	else:
+		print( str(j) + " is not recognised - pls help me :(" )
+		return -1
+		
+	
 def IsNumber(a):
 	test_str = str(a)
 	if len(test_str) == 0:
@@ -152,19 +175,20 @@ for i in range(0, len(data)):
 		# Store L's in row 1
 		if i == 1 and j > 1:
 			#if data[i][j] != "" and data[i][j] != "U":
-			if IsNumber( data[i][j] ):
-				if "%" in data[i][j]:
-					L[0][j-2] = data[i][j]
-				else:
-					L[0][j-2] = int(data[i][j])
-			else:
-				L[0][j-2] = -1
+			if "%" in data[i][j]:
+				L[0][j-2] = data[i][j]
+			elif IsNumber( data[i][j] ):
+				L[0][j-2] = int( data[i][j] )
+			elif "+" in data[i][j] or "-" in data[i][j]:
+				L[0][j-2] = JPiToL( data[i][j] )
 
 		# Store remaining L's
 		if i - 1 in dash_line_location and j > 1:
 			#if data[i][j] != "":
 			if IsNumber( data[i][j] ):
 				L[ dash_line_location.index(i-1) + 1 ][j-2] = int(data[i][j])
+			elif "+" in data[i][j] or "-" in data[i][j]:
+				L[ dash_line_location.index(i-1) + 1 ][j-2] = JPiToL(data[i][j])
 
 		# Store energy (row 2)
 		if i == 2 and j > 1 and IsNumber( data[i][j] ):#data[i][j] != "":
@@ -201,6 +225,7 @@ for i in range(0, len(data)):
 			if IsNumber( data[i][j] ):
 			#if data[i][j] != "":
 				ptAngle[i-3-3*numExAngles-2] = float(data[i][j])
+			
 
 # Write the data to file
 for i in range(0, numStates):
