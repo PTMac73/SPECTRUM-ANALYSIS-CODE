@@ -77,7 +77,6 @@ numL = 0
 for i in range(0, len(clean_array) ):
 	temp_str = clean_array[i].split("/")[-1]
 	split_file_name = temp_str.split("-")
-	
 	if ( Jnumbers == [] or int(Jnumbers[numL-1]) < int(split_file_name[3]) ):
 		Jnumbers.append( split_file_name[3] )
 		jpi.append( split_file_name[4].split(".")[0] )
@@ -156,8 +155,9 @@ for i in range(0,len(clean_array)):
 CSVFileLines = ["" for i in range(numL*(len(angle)+1)+2)]
 
 # Append the first two rows (model name and energies)
-CSVFileLines[0] += ",,"
-CSVFileLines[1] += ",,"
+# Append corner item
+CSVFileLines[0] += "Jpi,,,"
+CSVFileLines[1] += ",,,"
 for i in range(0, len(model_name) ):
 	if i == 0:
 		CSVFileLines[0] += model_name[i] 
