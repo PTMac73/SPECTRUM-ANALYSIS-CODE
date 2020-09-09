@@ -1,0 +1,171 @@
+'  PTM_Weight
+'  Calculate weighted average, weighted average error, and weighted standard deviation
+
+
+' =========================================================================== '
+'Converts the value to a double (passes by reference)
+Sub ForceDbl(X)
+	If IsNumeric(X) Then
+		X = CDbl(X)
+	Else
+		X = 0.0
+	End If
+End Sub
+
+
+' =========================================================================== '
+'Calculates weighted average when fed:
+'	* X = array of data points
+'	* E = array of errors on X - they have to correspond to one another
+Function WAV( X, E ) As Double
+	'Declare variables
+	Dim row As Integer
+	Dim col As Integer
+	Dim W As Double
+	Dim WX As Double
+	
+	'Intitialise sums
+	W = 0.0
+	WX = 0.0
+	WAV = 0.0
+	
+	'Check that it is an array
+	If IsArray(X) Then
+	
+		'Loop over rows and columns in the array
+		For row = LBound(X,1) To UBound(X,1)
+			For col = LBound(X,2) To UBound(X,2)
+			
+				'Force everything to be doubles
+				ForceDbl( E(row,col) )
+				ForceDbl( X(row,col) )
+			
+				'Check that the error is greater than zero
+				If E(row,col) > 0 Then
+				
+					'Calculate the sums
+					W = W + 1/( E(row,col)^2 )
+					WX = WX +  X(row,col)/( E(row,col)^2 )
+				End If
+				
+			Next
+		Next
+		
+		'Now calculate the weighted average (if W is non-zero)
+		If W > 0 Then
+			WAV = WX/W
+		End If
+		
+	Else
+		'Just been fed one number - average is just X (if a number)
+		If IsNumeric(X) Then
+			WAV = X
+		End If
+	End If
+End Function
+
+
+' =========================================================================== '
+'Calculates weighted average error when fed:
+'	* E = array of errors on X - they have to correspond to one another
+Function WAVERR( E ) As Double
+	'Declare variables
+	Dim row As Integer
+	Dim col As Integer
+	Dim W As Double
+	
+	'Initialise sums
+	W = 0.0
+	WAVERR = 0.0
+	
+	'Check that have been fed an array
+	If IsArray(E) Then
+	
+		'Loop over rows and columns in array
+		For row = LBound(E,1) To UBound(E,1)
+			For col = LBound(E,2) To UBound(E,2)
+			
+				'Force everything to be doubles
+				ForceDbl( E(row,col) )
+			
+				'Test that the error is non-zero
+				If E(row,col) > 0 Then
+					W = W + 1/( E(row,col)^2 )
+				End If
+				
+			Next
+		Next
+		
+		'Calculate the weighted average error if greater than zero
+		If W > 0 Then
+			WAVERR = 1/SQR( W )
+		End If
+		
+	Else
+		'Single value given - check it's a number and return it
+		If IsNumeric(E) Then
+			WAVERR = E
+		End If
+	End If
+End Function
+
+
+' =========================================================================== '
+'Calculates weighted standard deviation when fed:
+'	* X = array of data points
+'	* E = array of errors on X - they have to correspond to one another
+Function WSD( X, E ) As Double
+	'Declare variables
+	Dim row As Integer
+	Dim col As Integer
+	Dim waverage As Double
+	Dim DenSum As Double
+	Dim NumSum As Double
+	Dim N As Integer
+	Dim frac As Double
+	
+	'Intitialise variables and sums
+	W = 0.0
+	N = 0
+	waverage = WAV(X,E )
+	DenSum = 0.0
+	NumSum = 0.0
+	frac = 0.0
+	WSD = 0.0
+
+	'Test that we have an array (necessary for SD)
+	If IsArray(E) Then
+	
+		'Loop over rows and columns
+		For row = LBound(E,1) To UBound(E,1)
+			For col = LBound(E,2) To UBound(E,2)
+			
+				'Force everything to be doubles
+				ForceDbl( E(row,col) )
+				ForceDbl( X(row,col) )
+			
+				'Calculate numerator, denominator, and sum if error > 0
+				If E(row,col) > 0 Then
+					NumSum = NumSum + ( ( X(row,col) - waverage )/E(row,col) )^2
+					N = N + 1
+					DenSum = DenSum + 1/( E(row,col)^2 )
+				End If
+				
+			Next
+		Next
+		
+		'Calculate the required fraction for the denominator
+		if N > 0 Then
+			frac = (N-1)/N
+		End If
+		
+		'Calculate the weighted standard deviation if a legit sum
+		if frac > 0.0 And DenSum > 0 Then
+			WSD = SQR( NumSum/( frac*DenSum ) )
+		End If
+	End If
+End Function
+
+
+
+
