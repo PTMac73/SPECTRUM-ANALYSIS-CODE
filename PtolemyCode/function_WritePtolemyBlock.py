@@ -49,7 +49,7 @@ print 0
 
 	# Continue writing
 	inFile.write('''
-PARAMETERSET dpsb labangles r0target lstep=1 lmin=0 lmax=30 maxlextrap=0
+PARAMETERSET dpsb r0target lstep=1 lmin=0 lmax=30 maxlextrap=0
 PROJECTILE
 NODES = 0
 R = 1   A = 0.5   WAVEFUNCTION = av18   L = 0

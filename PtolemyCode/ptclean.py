@@ -136,6 +136,10 @@ while True:
 
 	# Elastic
 	elif ( len(words) > 1 and words[0] == "0" and words[1] == "ANGLE" and elastic_flag == 1 ):
+		# Open an output file for cleaning
+		filename = CleanFileName( sys.argv[1], "00-02p" )
+		outfile = open( filename,'w+')
+		
 		# Entered a region where there are useful numbers - deal with them in a new loop
 		while True:
 			# Get the next line and split it

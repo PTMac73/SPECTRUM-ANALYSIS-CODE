@@ -56,7 +56,7 @@ def GetOptions(inFileDir):
 	# Check for not enough necessary options
 	for key,val in dct.items():
 		if dct[key] == "string" or dct[key] == -1.0 or dct[key] == -1:
-			sys.exit("Options file does not contain enough options")
+			sys.exit("Options file does not contain enough options. Missing " + str(key))
 
 	# Return the dictionary
 	return dct

@@ -77,7 +77,7 @@ numL = 0
 for i in range(0, len(clean_array) ):
 	temp_str = clean_array[i].split("/")[-1]
 	split_file_name = temp_str.split("-")
-	if ( Jnumbers == [] or int(Jnumbers[numL-1]) < int(split_file_name[3]) ):
+	if ( Jnumbers == [] or int(Jnumbers[-1]) < int(split_file_name[3]) ):
 		Jnumbers.append( split_file_name[3] )
 		jpi.append( split_file_name[4].split(".")[0] )
 

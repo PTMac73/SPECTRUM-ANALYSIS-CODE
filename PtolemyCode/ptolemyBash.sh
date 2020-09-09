@@ -18,10 +18,10 @@ C_DEFAULT="\e[m"
 C_RED="\e[1;31m"
 
 # SWITCHES
-SWITCH_DELETE_FILE=0
-SWITCH_WRITE_INPUT=0
-SWITCH_RUN_PTOLEMY=0
-SWITCH_CLEAN=0
+SWITCH_DELETE_FILE=1
+SWITCH_WRITE_INPUT=1
+SWITCH_RUN_PTOLEMY=1
+SWITCH_CLEAN=1
 SWITCH_CSV_ARRAY=1
 
 # FIXED DIRECTORIES
@@ -103,7 +103,7 @@ delete_file_type(){
 	flag=0
 	for file in "$2"/*"$1"
 	do
-		if [[ "$file" != "$2*$1" ]]
+		if [[ "$file" != "$2/*$1" ]]
 		then
 			rm "${file}"
 			flag=1

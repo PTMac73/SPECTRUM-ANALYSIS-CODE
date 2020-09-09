@@ -109,10 +109,10 @@ def JLToJP(J,L):
 def ReduceStates( L_full, J_full, node_full, LMAX ):
 	# Find out where there are duplicate [L,node] states
 	indexArray = []
-	for i in range( 0, len(L_full) - 1 ):
-		if L_full[i] == L_full[i+1] and node_full[i] != node_full[i+1] and L_full[i] <= LMAX:
+	for i in range( 0, len(L_full) ):
+		if ( i < len(L_full) - 1 and L_full[i] == L_full[i+1] and node_full[i] != node_full[i+1] ) or L_full[i] > LMAX:
 			indexArray.append(i)
-	
+
 	# Now delete those duplicate elements from J, L, and node
 	[ L_final, J_final, node_final ] = [ copy.deepcopy( L_full ), copy.deepcopy( J_full ), copy.deepcopy( node_full ) ]
 	for i in range(0,len(indexArray)):
@@ -127,6 +127,8 @@ def ReduceStates( L_full, J_full, node_full, LMAX ):
 	JP_final = JLToJP(J_final,L_final)
 	
 	# Print levels
+	#PrintStates(J_full,L_full,node_full)
+	#print("-----")
 	#PrintStates(J_final,L_final,node_final)
 
 	# Return the final quantities
@@ -246,12 +248,12 @@ def GenerateSpinParity(opt_dct):
 				J_comb_n = J[k_n]
 				node_comb_n = node[k_n]
 			else:
-				#L_comb_n = CombineQuantities( L[k_n], L[k_n-1] )
-				#J_comb_n = CombineQuantities( J[k_n], J[k_n-1] )
-				#node_comb_n = CombineQuantities( node[k_n], node[k_n-1] )
-				L_comb_n = CombineQuantities( L[k_n+1], L[k_n], L[k_n-1] )
-				J_comb_n = CombineQuantities( J[k_n+1], J[k_n], J[k_n-1] )
-				node_comb_n = CombineQuantities( node[k_n+1], node[k_n], node[k_n-1] )
+				L_comb_n = CombineQuantities( L[k_n], L[k_n-1] )				# High A NDBD work
+				J_comb_n = CombineQuantities( J[k_n], J[k_n-1] )
+				node_comb_n = CombineQuantities( node[k_n], node[k_n-1] )
+				#L_comb_n = CombineQuantities( L[k_n+1], L[k_n], L[k_n-1] )		# Low A ISS work
+				#J_comb_n = CombineQuantities( J[k_n+1], J[k_n], J[k_n-1] )
+				#node_comb_n = CombineQuantities( node[k_n+1], node[k_n], node[k_n-1] )
 				
 
 			# Now zip together the states
