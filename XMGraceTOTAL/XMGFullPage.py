@@ -70,6 +70,16 @@ def ReturnMaxIndex( MAX, i ):
 		return 2*i
 	elif MAX == "pt":
 		return 2*i + 1
+		
+def EnergyStringToEnergy( e_str ):
+	if "_" in e_str:
+		try:
+			return float( e_str.replace("_",".") )
+		except:
+			print("FAIL WHALE")
+			return -1.0
+	else:
+		return -1.0
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Define the input files
@@ -121,7 +131,7 @@ for i in range(0,count):
 	model_name.append( tempString[bracket_positions[0]+1:bracket_positions[1]] )
 
 	# Find the energy
-	energy.append( float(tempString[dash_positions[1]+1:dash_positions[2]]))
+	energy.append( EnergyStringToEnergy(tempString[dash_positions[1]+1:dash_positions[2]]))
 	
 	# Find the angular momenta
 	L_string = tempString[bracket_positions[2]+1:bracket_positions[3]]
@@ -366,11 +376,11 @@ STRING JUST 9
 	else:
 		outFile.write("STRING " + str(angle_max - 5) + ", " + str( 0.923*height_of_box ) + "\n")
 		
-		
+	fmt = "{EEE:.3f}"
 	if printNumOnGraph == 1:
-		outFile.write("STRING DEF \"" + "(" + str(w*v*(numFile-1) + i + 1) + ") " + str(energy[i]) + "\"\n")
+		outFile.write("STRING DEF \"" + "(" + str(w*v*(numFile-1) + i + 1) + ") " + fmt.format( EEE = energy[i]) + "\"\n")
 	else:
-		outFile.write("STRING DEF \"" + str(energy[i]) + "\"\n")
+		outFile.write("STRING DEF \"" + fmt.format( EEE = energy[i]) + "\"\n")
 
 	# MODEL NAME STRING
 	if model_name[i] != "NA":

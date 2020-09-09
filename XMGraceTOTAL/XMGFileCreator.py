@@ -76,13 +76,18 @@ def GetDetailsFromCSV( CSV_file_name ):
 	isotope = detail_list[0]
 	reaction = detail_list[1]
 	return isotope, reaction
+	
+def EnergyString(energy):
+	fmt = "{EEE:.3f}"
+	temp = fmt.format( EEE = energy )
+	return temp.replace(".","_",1)
 
 def CreateDATFileName( model, energy, L, L_column, ExorPT, CSV_file_name ):
 	# Get details from CSV file name
 	if model == "":
 		model = "NA"
 	isotope, reaction = GetDetailsFromCSV( CSV_file_name )
-	file_name = isotope + "-" + reaction + "-" + ExorPT + "-["  + model + "]-" + str(energy) + "-" + CreateLString( GetColumn(L, L_column ) ) + ".dat"
+	file_name = isotope + "-" + reaction + "-" + ExorPT + "-["  + model + "]-" + EnergyString(energy) + "-" + CreateLString( GetColumn(L, L_column ) ) + ".dat"
 	return file_name
 
 
