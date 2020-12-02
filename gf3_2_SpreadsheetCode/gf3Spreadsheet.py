@@ -1,4 +1,4 @@
-# Asks for a gf3 output (from a text file) and reads out a tab-delimited version (with errors done 
+# Asks for a gf3 output (from a text file) and reads out a tab-delimited version (with errors done
 # correctly) to copy and paste easily into a spreadsheet.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Patrick MacGregor
@@ -24,7 +24,7 @@ if len(sys.argv) > 1:
 		# Reverse array
 		if sys.argv[i] in rev_array:
 			b_rev = 1
-		
+
 		# One line
 		if sys.argv[i] in one_line_array:
 			b_one_line = 1
@@ -69,13 +69,13 @@ for i in range(0,len(full_data)):
 	for j in range(0,len(split_line)):
 		if split_line[j] == "Chisq/d.o.f.=":
 			bg_shape[0] = split_line[j+1].rstrip(",")
-		
+
 		if split_line[j] == "A":
 			bg_shape[1] = split_line[j+2].rstrip(",")
-		
+
 		if split_line[j] == "B":
 			bg_shape[2] = split_line[j+2].rstrip(",")
-		
+
 		if split_line[j] == "C":
 			bg_shape[3] = split_line[j+2].rstrip(",")
 
@@ -118,7 +118,7 @@ else:
 # Loop over lines
 for i in range(0,len(data)):
 	split_data = data[i].split()
-	
+
 	if fitted_flag == 1:
 		# Remove the first value (line number)
 		split_data = split_data[1:len(split_data)]
@@ -132,7 +132,7 @@ for i in range(0,len(data)):
 				temp_list.append(split_data[j+1])
 
 		split_data = temp_list
-		
+
 	# Declare useful array for storing all values (*2 for errors)
 	if i == 0:
 		useful_data = [[] for j in range(0,len(data)-1)]
@@ -162,25 +162,25 @@ for i in range(0,len(data)):
 		else:
 			# Some quantities may not have a decimal point
 			decimal_point = -1
-		
+
 		# Define quantities from these
 		# Precision is the number of decimal places the number has
 		if decimal_point > 0 and bracketL != -1:
 			precision = bracketL - decimal_point - 1
 		else:
 			precision = 0
-		
+
 		# This distinguishes the numbers in and out of brackets
 		if bracketL != -1 and bracketR != -1:
 			num_in_brackets = split_data[j][bracketL+1:bracketR]
 			num_outside_brackets = split_data[j][0:bracketL]
-		
+
 			# Start adding numbers into the lists - want outside number first, and then inside number
 			useful_data[i].append(num_outside_brackets)
-		
+
 			# Define a factor to generate correct uncertainty on values
 			factor = 0.1 ** precision
-			
+
 			# Now correctly calculate the uncertainty
 			if precision == 0:
 				# No decimal places => therefore just a number
@@ -191,29 +191,31 @@ for i in range(0,len(data)):
 
 		else:
 			# No number in brackets - just append the number
-			if "." in split_data[j]:		
+			if "." in split_data[j]:
 				useful_data[i].append( float(split_data[j]) )
 			else:
 				useful_data[i].append( int(split_data[j]) )
-	
+
+# Sort the data in descending order based on position
+ud_sort = sorted( useful_data, key = lambda x: float(x[0]), reverse=True )
 
 # Convert data to strings so it can be output to console easily (except for the energy and error in energy, which is useless)
-for i in range(0,len(useful_data)):
-	for j in range(0,len(useful_data[i])-2):
-		useful_data_string[i].append(str(useful_data[i][j]))
+for i in range(0,len(ud_sort)):
+	for j in range(0,len(ud_sort[i])-2):
+		useful_data_string[i].append(str(ud_sort[i][j]))
 
 # Swap order if in wrong order
-loop_array = range(0,len(useful_data))
+loop_array = range(0,len(ud_sort))
 if b_rev == 1:
 	loop_array.reverse()
 
 # Now print all this to the console (with error message if uncertainties are very large)
 for i in loop_array:
-	for j in range(0,len(useful_data[i])-2):
-		if j % 2 == 0 and useful_data[i][j+1] > float(useful_data[i][j]) and ( (fitted_flag == 0 and j > 1) or (fitted_flag == 1) ):
+	for j in range(0,len(ud_sort[i])-2):
+		if j % 2 == 0 and ud_sort[i][j+1] > float(ud_sort[i][j]) and ( (fitted_flag == 0 and j > 1) or (fitted_flag == 1) ):
 			if b_one_line == 0:
-				print("## Warning: " + quantity_names[j] + " has error larger than value --> " + str(useful_data[i][j]) + " +/- " + str(useful_data[i][j+1]) )
-	
+				print("## Warning: " + quantity_names[j] + " has error larger than value --> " + str(ud_sort[i][j]) + " +/- " + str(ud_sort[i][j+1]) )
+
 	# Print differently based on b_one_line
 	if b_one_line == 0:
 		print("\t".join(useful_data_string[i]))
@@ -222,7 +224,7 @@ for i in loop_array:
 		print("\t"),
 
 	# Print warning if there is a negative height that has slipped in
-	if fitted_flag == 1 and "-" in useful_data[i][4]:
+	if fitted_flag == 1 and "-" in ud_sort[i][4]:
 		print("-------------------------------------------------------------------------------\n  Warning! Negative height detected \n-------------------------------------------------------------------------------")
 
 # Now print the useful list
@@ -231,10 +233,3 @@ if fitted_flag == 1:
 
 # Print blank line to make things easier to read
 print("")
-
-
-
-
-
-
-
