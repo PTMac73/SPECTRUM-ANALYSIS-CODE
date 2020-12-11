@@ -13,6 +13,8 @@ rev_array = [ "-r", "--reverse" ]
 b_rev = 0
 one_line_array = [ "-o" "--one-line" ]
 b_one_line = 0
+warn_array = ["-w", "--suppress-warnings"]
+b_warn = 0
 
 
 # Clear the terminal window
@@ -28,6 +30,10 @@ if len(sys.argv) > 1:
 		# One line
 		if sys.argv[i] in one_line_array:
 			b_one_line = 1
+
+		# Warnings
+		if sys.argv[i] in warn_array:
+			b_warn = 1
 
 # Ask for file directory
 in_file_dir = "data.txt"
@@ -213,7 +219,7 @@ if b_rev == 1:
 for i in loop_array:
 	for j in range(0,len(ud_sort[i])-2):
 		if j % 2 == 0 and ud_sort[i][j+1] > float(ud_sort[i][j]) and ( (fitted_flag == 0 and j > 1) or (fitted_flag == 1) ):
-			if b_one_line == 0:
+			if b_one_line == 0 and b_warn == 0:
 				print("## Warning: " + quantity_names[j] + " has error larger than value --> " + str(ud_sort[i][j]) + " +/- " + str(ud_sort[i][j+1]) )
 
 	# Print differently based on b_one_line
