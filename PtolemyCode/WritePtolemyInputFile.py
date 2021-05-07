@@ -37,6 +37,12 @@ potential_out = os.environ["POTENTIAL_OUT"]
 # Load the option
 optionFileDir = sys.argv[1]
 
+# Work out the reaction code
+bPT = sys.argv[2]
+bDW = sys.argv[3]
+
+# TODO -- incorporate these into regular code
+
 # Get the values
 opt_dct = GetOptions(optionFileDir)
 

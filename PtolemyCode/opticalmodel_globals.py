@@ -7,6 +7,7 @@
 # The University of Manchester
 # =============================================================================================== #
 # GLOBAL CONSTANTS
+import numpy as np
 amu = 931.494	# amu in MeV/c^2
 PRINT = 0
 sep = "\t"
@@ -88,11 +89,49 @@ def CheckP(p):
 	if p != 0 and p != 1:
 		raise ValueError("p must have a value of 0 or 1")
 
+# ----------------------------------------------------------------------------------------------- #
+# DWUCK STUFF!!!!
+# Define a function to write a block of 8 characters padded with spaces at the end
+def WriteBlock(string, n = 8):
+	if len(string) > n:
+		print("Not allowed!")
+		return " "*n
+	else:
+		return string + " "*(n - len(string))
 
+# Return + or - based on the sign of the number
+def GetSignChar(num):
+	if num < 0: return "-"
+	elif num >= 0: return "+"
+	else: return "?"
 
-
-
-
+# Return a number rounded to a particular length
+def RoundNumToLength(num,length):
+	if num == 0:
+		power = 2
+	else:
+		power = max( np.ceil( np.log10(abs(num)) ), 2 )
+	
+	return format(num, "0" + str(length) + "." + str(int(length - power - 1)) + "f" )
+	
+# Combine these to write a block for specifying DWUCK optical model input
+def WriteDWUCKOMPar(par):
+	return WriteBlock(GetSignChar(par) + RoundNumToLength(abs(par),6) )
+	
+def WriteDWUCKSmallNum(par):
+	return WriteBlock( format(par, "4.1f" ) )
+	
+def WriteDWUCKSignSmallNum(par):
+	return WriteBlock( GetSignChar(par) + format(abs(par), "04.1f" ) )	
+		
+# Define the DWUCK optical model input parameters
+def WriteDWUCKOMBlock(v,r,a,rc0):
+	string_list = []
+	string_list.append( WriteBlock("+01.") + WriteDWUCKOMPar(-v[0]) + WriteDWUCKOMPar(r[0]) + WriteDWUCKOMPar(a[0]) + WriteBlock("") + WriteDWUCKOMPar(-v[1]) + WriteDWUCKOMPar(r[1]) + WriteDWUCKOMPar(a[1]) )
+	string_list.append( WriteBlock("+02.") + WriteDWUCKOMPar(0.00) + WriteDWUCKOMPar(0.00) + WriteDWUCKOMPar(0.00) + WriteBlock("") + WriteDWUCKOMPar(4*v[2]) + WriteDWUCKOMPar(r[2]) + WriteDWUCKOMPar(a[2]) )
+	string_list.append( WriteBlock("-04.") + WriteDWUCKOMPar(-4*v[3]) + WriteDWUCKOMPar(r[3]) + WriteDWUCKOMPar(a[3]) + WriteBlock("") + WriteDWUCKOMPar(-4*v[4]) + WriteDWUCKOMPar(r[4]) + WriteDWUCKOMPar(a[4]) )
+	string_list.append( WriteBlock( format( rc0, "07.3f" ) ) )
+	return string_list
 
 
 

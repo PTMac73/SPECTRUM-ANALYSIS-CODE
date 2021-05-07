@@ -248,12 +248,12 @@ def GenerateSpinParity(opt_dct):
 				J_comb_n = J[k_n]
 				node_comb_n = node[k_n]
 			else:
-				L_comb_n = CombineQuantities( L[k_n], L[k_n-1] )				# High A NDBD work
-				J_comb_n = CombineQuantities( J[k_n], J[k_n-1] )
-				node_comb_n = CombineQuantities( node[k_n], node[k_n-1] )
-				#L_comb_n = CombineQuantities( L[k_n+1], L[k_n], L[k_n-1] )		# Low A ISS work
-				#J_comb_n = CombineQuantities( J[k_n+1], J[k_n], J[k_n-1] )
-				#node_comb_n = CombineQuantities( node[k_n+1], node[k_n], node[k_n-1] )
+				#L_comb_n = CombineQuantities( L[k_n], L[k_n-1] )				# High A NDBD work
+				#J_comb_n = CombineQuantities( J[k_n], J[k_n-1] )
+				#node_comb_n = CombineQuantities( node[k_n], node[k_n-1] )
+				L_comb_n = CombineQuantities( L[k_n+1], L[k_n], L[k_n-1] )		# Low A ISS work
+				J_comb_n = CombineQuantities( J[k_n+1], J[k_n], J[k_n-1] )
+				node_comb_n = CombineQuantities( node[k_n+1], node[k_n], node[k_n-1] )
 				
 
 			# Now zip together the states

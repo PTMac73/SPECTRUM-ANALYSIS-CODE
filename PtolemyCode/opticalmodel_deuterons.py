@@ -27,7 +27,7 @@ def DeuteronModelNumber():
 	return [ "AnCai", "Bojowald", "DaehnickNR", "DaehnickR", "HanShiShen", "LohrHaeberli", "PereyPerey" ] 
 
 # An and Cai
-def AnCai(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def AnCai(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 0):
 	# CHECK VALUE OF H2 - Energy changes if ejectile is deuteron
 	CheckP(H)
 
@@ -59,7 +59,14 @@ def AnCai(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "An and Cai deuteron")
@@ -68,7 +75,7 @@ def AnCai(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 
 # =============================================================================================== #
 # PereyPerey is another potential used for deuterons
-def PereyPerey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def PereyPerey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 0):
 	# CHECK VALUE OF H2 - Energy changes if ejectile is deuteron
 	CheckP(H)
 
@@ -101,7 +108,14 @@ def PereyPerey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Perey and Perey deuteron")
@@ -110,7 +124,7 @@ def PereyPerey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H
 
 # =============================================================================================== #
 # LohrHaeberli is another potential used for deuterons
-def LohrHaeberli(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def LohrHaeberli(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 0):
 	# CHECK VALUE OF H2 - Energy changes if ejectile is deuteron
 	CheckP(H)
 
@@ -142,7 +156,14 @@ def LohrHaeberli(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product,
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Lohr and Haeberli deuteron")
@@ -152,7 +173,7 @@ def LohrHaeberli(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product,
 
 # =============================================================================================== #
 # HanShiShen is another potential used for deuterons
-def HanShiShen(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def HanShiShen(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 0):
 	# CHECK VALUE OF H2 - Energy changes if ejectile is deuteron
 	CheckP(H)
 
@@ -184,7 +205,14 @@ def HanShiShen(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Han, Shi, and Shen deuteron")
@@ -194,7 +222,7 @@ def HanShiShen(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H
 
 # =============================================================================================== #
 # Bojowald is another potential used for deuterons
-def Bojowald(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def Bojowald(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 0):
 	# CHECK VALUE OF H2 - Energy changes if ejectile is deuteron
 	CheckP(H)
 
@@ -226,7 +254,14 @@ def Bojowald(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Bojowald deuteron")
@@ -236,7 +271,7 @@ def Bojowald(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 
 # =============================================================================================== #
 # DaehnickNR is another potential used for deuterons
-def DaehnickNR(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def DaehnickNR(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 0):
 	# CHECK VALUE OF H2 - Energy changes if ejectile is deuteron
 	CheckP(H)
 
@@ -274,7 +309,14 @@ def DaehnickNR(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Daehnick (non-rel) deuteron")
@@ -288,7 +330,7 @@ def DaehnickNR(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H
 
 # =============================================================================================== #
 # DaehnickR is another potential used for deuterons
-def DaehnickR(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def DaehnickR(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 0):
 	# CHECK VALUE OF H2 - Energy changes if ejectile is deuteron
 	CheckP(H)
 
@@ -326,7 +368,14 @@ def DaehnickR(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H)
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Daehnick (non-rel) deuteron")

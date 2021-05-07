@@ -20,12 +20,15 @@ C_RED="\e[1;31m"
 # SWITCHES
 SWITCH_DELETE_FILE=1
 SWITCH_WRITE_INPUT=1
-SWITCH_RUN_PTOLEMY=1
+SWITCH_RUN_CODE=1
+SWITCH_PTOLEMY=0
+SWITCH_DWUCK=1
 SWITCH_CLEAN=1
 SWITCH_CSV_ARRAY=1
 
 # FIXED DIRECTORIES
 PTOLEMY_DIR=~/Software/Ptolemy
+DWUCK_DIR=~/Software/dwuck/bin
 PTOLEMY_ANALYSIS_DIR="/home/ptmac/Documents/SPECTRUM_ANALYSIS_CODE/PtolemyCode"
 
 # Check for help option
@@ -145,11 +148,11 @@ fi
 # Run WritePtolemyInputFile.py -> writes input file
 if [ $SWITCH_WRITE_INPUT == 1 ]
 then
-	python2 "${PTOLEMY_ANALYSIS_DIR}/WritePtolemyInputFile.py" "${PTOLEMY_OPTION_FILE}"
+	python2 "${PTOLEMY_ANALYSIS_DIR}/WritePtolemyInputFile.py" "${PTOLEMY_OPTION_FILE}" "${SWITCH_PTOLEMY}" "${SWITCH_DWUCK}"
 fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ RUN PTOLEMY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Run ptolemy for each of the input files and store in the right folder
-if [ $SWITCH_RUN_PTOLEMY == 1 ]
+if [ $SWITCH_RUN_CODE == 1 ]
 then
 	for FILE in "${INPUT_FILE_DIR}/"*.in ; do
 		# Get length of input file name
@@ -161,8 +164,17 @@ then
 		# Grab the substring we want using lengths and add ".out"
 		OUTPUT_NAME="${FILE:FOLDER_LENGTH:OUTPUT_LENGTH}.out"
 		
-		# Run Ptolemy
-		"${PTOLEMY_DIR}/"ptolemy <"${FILE}">"${OUTPUT_FILE_DIR}/${OUTPUT_NAME}"
+		# Run Ptolemy (if desired)
+		if [ $SWITCH_PTOLEMY == 1 ]
+		then
+			# TODO test if file is suitable for ptolemy or dwuck...
+			"${PTOLEMY_DIR}/"ptolemy <"${FILE}">"${OUTPUT_FILE_DIR}/${OUTPUT_NAME}"
+		fi
+		if [ $SWITCH_DWUCK == 1 ]
+		then
+			# TODO test if file is suitable for ptolemy or dwuck...
+			"${DWUCK_DIR}/"dwuck <"${FILE}">"${OUTPUT_FILE_DIR}/${OUTPUT_NAME}"
+		fi
 	
 		# Echo message
 		FULLFILE="${OUTPUT_FILE_DIR}/${OUTPUT_NAME}"
@@ -176,7 +188,14 @@ then
 	for OUTFILE in "${OUTPUT_FILE_DIR}/"*.out
 	do
 		# Run ptclean script
-		python2 "${PTOLEMY_ANALYSIS_DIR}/"ptclean.py "${OUTFILE}"
+		if  [ $SWITCH_PTOLEMY == 1 ]
+		then
+			python2 "${PTOLEMY_ANALYSIS_DIR}/"ptclean.py "${OUTFILE}"
+		fi
+		if  [ $SWITCH_DWUCK == 1 ]
+		then
+			# TODO - clean up dwuck input
+		fi
 	done
 		
 	for CLEAN_FILE in "${OUTPUT_FILE_DIR}/"*.out-clean
@@ -213,10 +232,10 @@ then
 	done
 	
 	# Now run the python2 script to create the mahoosive CSV file
+	# TODO have separate Ptolemy and DWUCK versions
 	CSV_NAME="${OUTPUT_FILE_DIR}/PT_Raw.csv"
 	python2 "${PTOLEMY_ANALYSIS_DIR}/"CSVFileCreator.py "${OUTPUT_FILE_DIR}/${CLEAN_NAME}" "${CSV_NAME}"
 fi
-
 
 
 

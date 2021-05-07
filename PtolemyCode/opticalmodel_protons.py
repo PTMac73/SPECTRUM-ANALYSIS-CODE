@@ -26,7 +26,7 @@ def ProtonModelNumber():
 
 # =============================================================================================== #
 # Koning-Delaroche set
-def KoningDelaroche(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def KoningDelaroche(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 1):
 	# CHECK VALUE OF H
 	CheckP(H)
 
@@ -83,7 +83,14 @@ def KoningDelaroche(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Produ
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Koning and Delaroche ")
@@ -114,7 +121,7 @@ def KoningDelaroche(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Produ
 
 # =============================================================================================== #
 # Perey (protons)
-def Perey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def Perey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 1):
 	# CHECK VALUE OF H
 	CheckP(H)
 
@@ -146,7 +153,14 @@ def Perey(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Perey proton")
@@ -160,7 +174,7 @@ def Menet(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	CheckP(H)
 
 	# CALCULATE TRIVIAL PARAMETERS
-	[N, Q, E] = CalcTrivials(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H)
+	[N, Q, E] = CalcTrivials(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 1)
 	
 	# Calculate final parameters
 	v = 49.9 - 0.22*E + 26.4*( N - Z )/A + 0.4*Z*( A**(-1.0/3.0) )
@@ -187,7 +201,14 @@ def Menet(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Menet proton")
@@ -196,7 +217,7 @@ def Menet(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 
  # =============================================================================================== #
 # Varner (protons)
-def Varner(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def Varner(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 1):
 	# CHECK VALUE OF H
 	CheckP(H)
 
@@ -232,7 +253,14 @@ def Varner(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Varner proton")
@@ -243,7 +271,7 @@ def Varner(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
 
 # =============================================================================================== #
 # Becchetti and Greenlees (protons)
-def BecchettiGreenlees(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H):
+def BecchettiGreenlees(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Product, H, reaction_code = 1):
 	# CHECK VALUE OF H
 	CheckP(H)
 
@@ -275,7 +303,14 @@ def BecchettiGreenlees(A, Z, Ebeam, Ex, M_Target, M_Projectile, M_Ejectile, M_Pr
 	v_list = [v, vi, vsi, vso, vsoi]
 	r_list = [r0, ri0, rsi0, rso0, rsoi0]
 	a_list = [a, ai, asi, aso, asoi]
-	string_list = MakeStringList(v_list,r_list,a_list,rc0)
+
+	# Make output based on reaction code
+	# Ptolemy = 0
+	if reaction_code ==0:
+		string_list = MakeStringList(v_list,r_list,a_list,rc0)
+	# DWUCK = 1
+	elif reaction_code == 1:
+		string_list = WriteDWUCKOMBlock( v_list, r_list, a_list,rc0 )
 	
 	if PRINT == 1:
 		PrintOpticalModel(string_list, "Becchetti and Greenlees proton")
